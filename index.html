@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risk Assessment Matrix</title>
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div>
+    <h1>&#x26A0;&#xFE0F; Risk Assessment Matrix</h1>
+    <div class="subtitle">Likelihood &times; Impact &mdash; Interactive risk register</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-secondary" id="loadSampleBtn">Load Sample Data</button>
+    <button class="btn btn-secondary" id="exportCsvBtn">Export CSV</button>
+    <button class="btn btn-primary" id="exportJsonBtn">Export JSON</button>
+  </div>
+</header>
+
+<div class="main-layout">
+  <!-- Left: Matrix + Summary -->
+  <div>
+    <div class="panel">
+      <div class="panel-title">Heat Map</div>
+      <div class="matrix-container">
+        <div class="matrix-grid" id="matrixGrid"></div>
+      </div>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem">
+        <span style="font-size:.7rem;color:#64748b">Legend:</span>
+        <span class="risk-badge" style="background:#dc2626">Critical 20&ndash;25</span>
+        <span class="risk-badge" style="background:#f97316">High 12&ndash;19</span>
+        <span class="risk-badge" style="background:#eab308">Medium 6&ndash;11</span>
+        <span class="risk-badge" style="background:#22c55e">Low 1&ndash;5</span>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:1.5rem">
+      <div class="panel-title">Summary</div>
+      <div id="summaryCards" style="display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem"></div>
+    </div>
+  </div>
+
+  <!-- Right: Form + Register -->
+  <div>
+    <div class="panel">
+      <div class="panel-title">Add Risk</div>
+      <form id="riskForm" class="form-grid">
+        <div class="form-row">
+          <div class="form-group" style="grid-column:span 2">
+            <label for="riskTitle">Risk Title *</label>
+            <input type="text" id="riskTitle" placeholder="e.g. Ransomware via phishing" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="riskCategory">Category</label>
+            <select id="riskCategory">
+              <option value="cyber">Cybersecurity</option>
+              <option value="infra">Infrastructure</option>
+              <option value="compliance">Compliance &amp; Legal</option>
+              <option value="operational">Operational</option>
+              <option value="human">Human Factor</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="riskStatus">Status</label>
+            <select id="riskStatus">
+              <option value="open">Open</option>
+              <option value="in_progress">In Progress</option>
+              <option value="accepted">Accepted</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="riskLikelihood">Likelihood (1&ndash;5)</label>
+            <input type="range" id="riskLikelihood" min="1" max="5" value="3" oninput="updateScorePreview()">
+            <span id="likelihoodVal" style="font-size:.75rem;color:#64748b">3 &mdash; Possible</span>
+          </div>
+          <div class="form-group">
+            <label for="riskImpact">Impact (1&ndash;5)</label>
+            <input type="range" id="riskImpact" min="1" max="5" value="3" oninput="updateScorePreview()">
+            <span id="impactVal" style="font-size:.75rem;color:#64748b">3 &mdash; Moderate</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem">
+          <div id="scorePreview" style="font-size:1.6rem;font-weight:800"></div>
+          <div id="levelPreview" style="font-size:.75rem;font-weight:700"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="riskOwner">Owner</label>
+            <input type="text" id="riskOwner" placeholder="e.g. IT Security">
+          </div>
+          <div class="form-group">
+            <label for="riskDue">Due Date</label>
+            <input type="date" id="riskDue">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="riskDescription">Description</label>
+          <textarea id="riskDescription" placeholder="Describe the risk scenario..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="riskMitigation">Mitigation Plan</label>
+          <textarea id="riskMitigation" placeholder="Describe controls and remediation actions..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Risk</button>
+      </form>
+    </div>
+
+    <div class="panel risk-register" style="margin-top:1.5rem">
+      <div class="panel-title">Risk Register (<span id="riskCount">0</span> risks)</div>
+      <div id="riskTableWrapper"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { buildMatrixCells, getRiskColor, getRiskLevel, RiskRegister } from './src/risk_matrix.js';
+import { downloadCSV, downloadJSON } from './src/export.js';
+
+const register = new RiskRegister();
+
+const LIKELIHOOD_LABELS = [
+  '', 'Rare', 'Unlikely', 'Possible', 'Likely', 'Almost Certain'
+];
+const IMPACT_LABELS = [
+  '', 'Negligible', 'Minor', 'Moderate', 'Major', 'Catastrophic'
+];
+
+function renderMatrix() {
+  const grid = document.getElementById('matrixGrid');
+  grid.innerHTML = '';
+
+  // Y-axis label
+  const yLabel = document.createElement('div');
+  yLabel.className = 'matrix-label-y';
+  yLabel.textContent = 'Impact ↑';
+  yLabel.style.gridRow = '2 / 8';
+  yLabel.style.gridColumn = '1';
+  grid.appendChild(yLabel);
+
+  // X-axis header (empty corner)
+  const corner = document.createElement('div');
+  corner.style.gridColumn = '1';
+  corner.style.gridRow = '1';
+  grid.appendChild(corner);
+
+  // X labels (Likelihood)
+  for (let l = 1; l <= 5; l++) {
+    const lbl = document.createElement('div');
+    lbl.className = 'matrix-label-x';
+    lbl.textContent = `L${l}`;
+    lbl.title = LIKELIHOOD_LABELS[l];
+    lbl.style.gridColumn = l + 1;
+    lbl.style.gridRow = '1';
+    grid.appendChild(lbl);
+  }
+
+  // Cells (impact 5 down to 1)
+  for (let impact = 5; impact >= 1; impact--) {
+    // Row label
+    const rowLbl = document.createElement('div');
+    rowLbl.className = 'matrix-row-label';
+    rowLbl.textContent = `I${impact}`;
+    rowLbl.title = IMPACT_LABELS[impact];
+    rowLbl.style.gridColumn = '1';
+    grid.appendChild(rowLbl);
+
+    for (let likelihood = 1; likelihood <= 5; likelihood++) {
+      const score = likelihood * impact;
+      const color = getRiskColor(score);
+      const risks = register.getByCell(likelihood, impact);
+
+      const cell = document.createElement('div');
+      cell.className = 'matrix-cell';
+      cell.style.background = color;
+      cell.innerHTML = `
+        <span class="score">${score}</span>
+        ${risks.length ? `<span class="dot-count">${risks.length} risk${risks.length > 1 ? 's' : ''}</span>` : ''}
+        <div class="tooltip">L${likelihood} × I${impact} = ${score} &mdash; ${LIKELIHOOD_LABELS[likelihood]}, ${IMPACT_LABELS[impact]}</div>
+      `;
+      grid.appendChild(cell);
+    }
+  }
+
+  // X-axis footer label
+  const xLabel = document.createElement('div');
+  xLabel.style.gridColumn = '2 / 7';
+  xLabel.style.textAlign = 'center';
+  xLabel.style.fontSize = '0.65rem';
+  xLabel.style.color = '#64748b';
+  xLabel.style.fontWeight = '700';
+  xLabel.style.textTransform = 'uppercase';
+  xLabel.style.letterSpacing = '.07em';
+  xLabel.style.marginTop = '4px';
+  xLabel.textContent = 'Likelihood →';
+  grid.appendChild(xLabel);
+}
+
+function renderSummary() {
+  const s = register.getSummary();
+  const colors = { critical: '#dc2626', high: '#f97316', medium: '#eab308', low: '#22c55e' };
+  const container = document.getElementById('summaryCards');
+  container.innerHTML = Object.entries(colors).map(([level, color]) => `
+    <div style="background:#f8fafc;border-radius:8px;padding:.75rem;text-align:center;border-top:3px solid ${color}">
+      <div style="font-size:1.5rem;font-weight:800;color:${color}">${s[level]}</div>
+      <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:#64748b">${level}</div>
+    </div>
+  `).join('');
+}
+
+function renderTable() {
+  const risks = register.getAll();
+  document.getElementById('riskCount').textContent = risks.length;
+  const wrapper = document.getElementById('riskTableWrapper');
+  if (!risks.length) {
+    wrapper.innerHTML = '<div class="empty-state">No risks added yet. Use the form above to add your first risk.</div>';
+    return;
+  }
+  wrapper.innerHTML = `
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Risk</th><th>L</th><th>I</th>
+          <th>Score</th><th>Owner</th><th>Due</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${risks.map((r) => `
+          <tr>
+            <td style="font-family:monospace;font-size:.75rem;color:#94a3b8">${r.id}</td>
+            <td>
+              <div style="font-weight:600">${r.title}</div>
+              ${r.description ? `<div style="font-size:.75rem;color:#64748b;margin-top:.15rem">${r.description}</div>` : ''}
+            </td>
+            <td style="text-align:center">${r.likelihood}</td>
+            <td style="text-align:center">${r.impact}</td>
+            <td class="risk-score-cell">
+              <span class="risk-badge" style="background:${getRiskColor(r.score)}">${r.score}</span>
+            </td>
+            <td style="font-size:.78rem;color:#475569">${r.owner ?? '—'}</td>
+            <td style="font-size:.75rem;color:#94a3b8">${r.due_date ?? '—'}</td>
+            <td>
+              <span class="status-badge status-${r.status ?? 'open'}">${(r.status ?? 'open').replace('_', ' ')}</span>
+            </td>
+            <td>
+              <button class="btn btn-danger btn-sm" onclick="removeRisk('${r.id}')">Remove</button>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function render() {
+  renderMatrix();
+  renderSummary();
+  renderTable();
+}
+
+// Expose removeRisk globally for inline onclick
+window.removeRisk = (id) => {
+  register.remove(id);
+  render();
+};
+
+// Score preview
+window.updateScorePreview = () => {
+  const l = parseInt(document.getElementById('riskLikelihood').value);
+  const i = parseInt(document.getElementById('riskImpact').value);
+  const score = l * i;
+  const level = getRiskLevel(score);
+  const color = getRiskColor(score);
+  document.getElementById('likelihoodVal').textContent = `${l} — ${LIKELIHOOD_LABELS[l]}`;
+  document.getElementById('impactVal').textContent = `${i} — ${IMPACT_LABELS[i]}`;
+  document.getElementById('scorePreview').textContent = score;
+  document.getElementById('scorePreview').style.color = color;
+  document.getElementById('levelPreview').textContent = level.toUpperCase();
+  document.getElementById('levelPreview').style.color = color;
+};
+
+// Form submit
+document.getElementById('riskForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  register.add({
+    title:       document.getElementById('riskTitle').value.trim(),
+    category:    document.getElementById('riskCategory').value,
+    status:      document.getElementById('riskStatus').value,
+    likelihood:  parseInt(document.getElementById('riskLikelihood').value),
+    impact:      parseInt(document.getElementById('riskImpact').value),
+    owner:       document.getElementById('riskOwner').value.trim() || undefined,
+    due_date:    document.getElementById('riskDue').value || undefined,
+    description: document.getElementById('riskDescription').value.trim() || undefined,
+    mitigation:  document.getElementById('riskMitigation').value.trim() || undefined,
+  });
+  e.target.reset();
+  updateScorePreview();
+  render();
+});
+
+// Export buttons
+document.getElementById('exportJsonBtn').addEventListener('click', () =>
+  downloadJSON(register.toJSON())
+);
+document.getElementById('exportCsvBtn').addEventListener('click', () =>
+  downloadCSV(register.toCSV())
+);
+
+// Load sample data
+document.getElementById('loadSampleBtn').addEventListener('click', async () => {
+  const res = await fetch('./data/sample_risks.json');
+  const data = await res.json();
+  register.loadFromJSON(data);
+  render();
+});
+
+// Init
+updateScorePreview();
+render();
+</script>
+</body>
+</html>
