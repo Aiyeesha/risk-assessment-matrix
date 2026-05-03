@@ -1,0 +1,48 @@
+{
+  "categories": [
+    {
+      "id": "cyber",
+      "label": "Cybersecurity",
+      "color": "#ef4444",
+      "examples": ["Ransomware", "Phishing", "Data breach", "Unauthorized access", "DDoS"]
+    },
+    {
+      "id": "infra",
+      "label": "Infrastructure",
+      "color": "#f97316",
+      "examples": ["Hardware failure", "Power outage", "Network outage", "Data center incident"]
+    },
+    {
+      "id": "compliance",
+      "label": "Compliance & Legal",
+      "color": "#eab308",
+      "examples": ["GDPR violation", "Regulatory audit", "Contractual breach", "IP theft"]
+    },
+    {
+      "id": "operational",
+      "label": "Operational",
+      "color": "#22c55e",
+      "examples": ["Process failure", "Staff turnover", "Vendor dependency", "Configuration error"]
+    },
+    {
+      "id": "human",
+      "label": "Human Factor",
+      "color": "#3b82f6",
+      "examples": ["Insider threat", "Social engineering", "Accidental data loss", "Policy non-compliance"]
+    }
+  ],
+  "likelihood_labels": [
+    "Rare (< 1% / year)",
+    "Unlikely (1–10% / year)",
+    "Possible (10–50% / year)",
+    "Likely (50–90% / year)",
+    "Almost Certain (> 90% / year)"
+  ],
+  "impact_labels": [
+    "Negligible — no operational impact",
+    "Minor — limited disruption, < 1h downtime",
+    "Moderate — partial service degradation",
+    "Major — significant data/financial loss",
+    "Catastrophic — full outage, regulatory action"
+  ]
+}

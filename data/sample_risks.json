@@ -1,0 +1,111 @@
+{
+  "organization": "ACME Corp",
+  "assessment_date": "2026-05-03",
+  "assessor": "Aiyeesha",
+  "risks": [
+    {
+      "id": "R001",
+      "title": "Ransomware attack via phishing email",
+      "category": "cyber",
+      "likelihood": 4,
+      "impact": 5,
+      "description": "Employee clicks malicious attachment; ransomware encrypts file shares and backups.",
+      "existing_controls": "Email gateway filtering, MalwareBytes on endpoints",
+      "mitigation": "Implement immutable backups, MFA on all accounts, security awareness training",
+      "owner": "IT Security",
+      "due_date": "2026-06-30",
+      "status": "in_progress"
+    },
+    {
+      "id": "R002",
+      "title": "Unauthorized access via exposed RDP",
+      "category": "cyber",
+      "likelihood": 4,
+      "impact": 4,
+      "description": "RDP port exposed to internet; brute-force or known exploit (BlueKeep) used for initial access.",
+      "existing_controls": "Windows Firewall basic rules",
+      "mitigation": "Move RDP behind VPN, enable NLA, enforce account lockout policy",
+      "owner": "IT Ops",
+      "due_date": "2026-05-31",
+      "status": "open"
+    },
+    {
+      "id": "R003",
+      "title": "GDPR violation — unencrypted PII in transit",
+      "category": "compliance",
+      "likelihood": 3,
+      "impact": 4,
+      "description": "Customer PII transmitted over HTTP or stored without encryption, risking GDPR Article 32 non-compliance.",
+      "existing_controls": "TLS on main website",
+      "mitigation": "Enforce TLS 1.2+ on all endpoints, encrypt PII at rest, conduct DPA audit",
+      "owner": "DPO / Legal",
+      "due_date": "2026-07-31",
+      "status": "open"
+    },
+    {
+      "id": "R004",
+      "title": "Key person dependency — single sysadmin",
+      "category": "operational",
+      "likelihood": 3,
+      "impact": 3,
+      "description": "Critical IT knowledge concentrated in one person; illness or departure causes operational disruption.",
+      "existing_controls": "Some documentation exists",
+      "mitigation": "Cross-train second admin, complete runbook documentation, use password manager",
+      "owner": "IT Manager",
+      "due_date": "2026-08-31",
+      "status": "open"
+    },
+    {
+      "id": "R005",
+      "title": "Backup failure — NAS storage full",
+      "category": "infra",
+      "likelihood": 3,
+      "impact": 4,
+      "description": "NAS reaches capacity; Acronis backup jobs fail silently; data loss on next incident.",
+      "existing_controls": "Manual monthly checks",
+      "mitigation": "Automated capacity alerts at 80%, offload to cloud tier, review retention policy",
+      "owner": "IT Ops",
+      "due_date": "2026-06-15",
+      "status": "in_progress"
+    },
+    {
+      "id": "R006",
+      "title": "Insider threat — excessive user privileges",
+      "category": "human",
+      "likelihood": 2,
+      "impact": 4,
+      "description": "Employees retain admin rights beyond business need; risk of accidental or intentional data exfiltration.",
+      "existing_controls": "AD group policy",
+      "mitigation": "Implement least privilege, quarterly access review, enable PAM for admin tasks",
+      "owner": "IT Security",
+      "due_date": "2026-09-30",
+      "status": "open"
+    },
+    {
+      "id": "R007",
+      "title": "Third-party vendor breach",
+      "category": "operational",
+      "likelihood": 2,
+      "impact": 5,
+      "description": "A key SaaS vendor suffers a breach, exposing organization data or disrupting critical services.",
+      "existing_controls": "Contractual DPA with vendors",
+      "mitigation": "Third-party security questionnaire, monitor vendor breach notifications, data minimization",
+      "owner": "Procurement / Legal",
+      "due_date": "2026-10-31",
+      "status": "open"
+    },
+    {
+      "id": "R008",
+      "title": "Phishing — credential harvesting",
+      "category": "human",
+      "likelihood": 4,
+      "impact": 3,
+      "description": "Employee submits credentials on phishing page; account used for lateral movement or data access.",
+      "existing_controls": "Email gateway, basic awareness",
+      "mitigation": "MFA on all accounts, phishing simulation programme, conditional access policies",
+      "owner": "IT Security",
+      "due_date": "2026-06-30",
+      "status": "in_progress"
+    }
+  ]
+}
