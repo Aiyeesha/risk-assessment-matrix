@@ -92,7 +92,7 @@ qu'elles restent à jour.
 | 5 | Rapports Markdown et HTML : `risk-report` | ✅ |
 | 6 | Guide d'évaluation et registres d'exemple FR/EN → **v1.0.0** | ✅ |
 | 7 | Interface web sur GitHub Pages → **v1.1.0** | ✅ |
-| 8 | Dépôt public et protections | ⏳ |
+| 8 | Dépôt public et protections | ✅ |
 
 ## La méthode
 

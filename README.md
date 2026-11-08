@@ -90,7 +90,7 @@ stay up to date.
 | 5 | Markdown and HTML reports: `risk-report` | ✅ |
 | 6 | Assessment guide and example registers FR/EN → **v1.0.0** | ✅ |
 | 7 | Web interface on GitHub Pages → **v1.1.0** | ✅ |
-| 8 | Public repository and protections | ⏳ |
+| 8 | Public repository and protections | ✅ |
 
 ## The method
 
