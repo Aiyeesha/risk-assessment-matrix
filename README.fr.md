@@ -6,7 +6,7 @@ Un **registre de risques méthodique** pour une PME ou une ETI : identifier, ana
 traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifiable. Aligné sur
 **ISO/IEC 27005:2022** et sur **EBIOS Risk Manager** (ANSSI, version 1.5 de mars 2024).
 
-> 🚧 **En cours de construction** (v0.1.0). La méthode et le registre sont en place ; les références arrivent à l'étape 4.
+> 🚧 **En cours de construction** (v0.1.0). Méthode, registre, références et import/export sont en place ; les rapports arrivent à l'étape 5.
 
 ## Ce que contiendra le dépôt
 
@@ -17,7 +17,7 @@ traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifi
 | **Traitement et acceptation** | Réduire, accepter, transférer ou éviter ; acceptation formelle (qui, quand, pourquoi, jusqu'à quand) lorsque le risque résiduel reste au-dessus de l'appétence. |
 | **Revues et historique** | Prochaine revue, revues et mesures en retard, journal des modifications. |
 | **Liens** | Actifs, menaces et vulnérabilités, mesures de l'annexe A d'ISO/IEC 27001:2022, techniques MITRE ATT&CK, et playbook de [réponse aux incidents](https://github.com/Aiyeesha/incident-response-playbook) à appliquer si le risque se réalise. |
-| **Outils** | `risk-check` (vérification), `risk-report` (rapports Markdown et HTML), `risk-export` (JSON, CSV protégé contre l'injection de formules), interface web. |
+| **Outils** | `risk-check` (vérification), `risk-report` (rapports Markdown et HTML), `risk-export` et `risk-import` (JSON, CSV protégé contre l'injection de formules), interface web. |
 
 ## Feuille de route
 
@@ -26,7 +26,7 @@ traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifi
 | 1 | Dépôt, structure, vérification de la syntaxe TOML, CI | ✅ |
 | 2 | Méthode : format TOML, préréglages 5×5 et EBIOS RM 4×4 | ✅ |
 | 3 | Registre : modèle, règles de cohérence, `risk-check` | ✅ |
-| 4 | Références (ISO/IEC 27001, ATT&CK, playbooks), import et export CSV sûrs | ⏳ |
+| 4 | Références (ISO/IEC 27001, ATT&CK, playbooks), import et export CSV sûrs | ✅ |
 | 5 | Rapports Markdown et HTML : `risk-report` | ⏳ |
 | 6 | Guide d'évaluation et registres d'exemple FR/EN → **v1.0.0** | ⏳ |
 | 7 | Interface web sur GitHub Pages → **v1.1.0** | ⏳ |
@@ -144,6 +144,56 @@ du jour, ou celle donnée par `--today`.
 registre.prive.toml: attention : R01.review : revue en retard (prévue le 2027-01-01)
 1 fichier(s) vérifié(s) — OK, 1 avertissement(s)
 ```
+
+## Références
+
+Chaque risque — et chaque mesure, pour l'annexe A — peut renvoyer à trois référentiels :
+
+```toml
+iso27001 = ["8.7", "8.13"]    # mesures de l'annexe A d'ISO/IEC 27001:2022
+attack = ["T1486", "T1490"]   # techniques MITRE ATT&CK du scénario
+playbooks = ["P02"]           # playbook à appliquer si le risque se réalise
+```
+
+| Référentiel | Ce que `risk-check` vérifie |
+|---|---|
+| **ISO/IEC 27001:2022, annexe A** | Le numéro existe : 5.1 à 5.37 (organisationnelles), 6.1 à 6.8 (personnes), 7.1 à 7.14 (physiques), 8.1 à 8.34 (technologiques). Seuls les numéros figurent dans le dépôt : le texte des mesures appartient à l'ISO. |
+| **MITRE ATT&CK** | Le format : technique `T1234` ou sous-technique `T1234.001`. L'export y ajoute le lien vers la fiche [attack.mitre.org](https://attack.mitre.org/). |
+| **Playbooks** | Le playbook existe parmi P01 à P07 du dépôt [incident-response-playbook](https://github.com/Aiyeesha/incident-response-playbook) ; l'export donne son titre et son lien dans la langue du registre. |
+
+Un identifiant en double dans une même liste est signalé.
+
+> ⚠️ **L'existence d'une technique ATT&CK n'est pas vérifiée.** Le référentiel compte plusieurs
+> centaines de techniques et évolue deux fois par an : l'embarquer obligerait à le tenir à jour.
+> Seul le format est contrôlé ; vérifiez l'identifiant sur attack.mitre.org.
+
+## Import et export
+
+```powershell
+risk-export registre.prive.toml -o registre.json                       # JSON complet (défaut)
+risk-export registre.prive.toml --format csv -o risques.csv --measures mesures.csv
+risk-import risques.csv --measures mesures.csv -o registre.prive.toml `
+    --method iso27005-5x5 --organisation "Atelier Lumen" --assessed-on 2026-09-01 --assessor "Équipe sécurité"
+```
+
+- **`risk-export`** n'exporte qu'un registre **valide** (sinon il affiche ses erreurs, code `1`).
+  - **JSON** (`schema_version` 1) : registre complet, méthode comprise, avec le niveau de chaque
+    note, les liens ATT&CK et playbooks, et les avertissements à la date de référence.
+  - **CSV** : un fichier des risques (une ligne par risque, avec les niveaux calculés et le nombre
+    de mesures ouvertes) et, avec `--measures`, un fichier des mesures. Séparateur `;` pour un
+    registre français (Excel français), `,` pour un registre anglais ; option `--delimiter`.
+    Encodage UTF-8 avec BOM, reconnu par Excel. Les listes s'écrivent `Messagerie | Virements`.
+- **`risk-import`** crée un registre TOML depuis ces mêmes colonnes : un export modifié dans un
+  tableur se réimporte tel quel. Les cellules mal écrites (date, entier, oui/non) sont signalées
+  avec leur ligne et rien n'est écrit ; sinon le registre est écrit puis vérifié, et ce qui reste
+  à compléter est listé (code `1`). L'historique n'a pas de colonne : il se complète dans le TOML.
+- Aucune des deux commandes n'écrase un fichier existant sans `--force`.
+
+> 🛡️ **Injection de formules (CWE-1236).** Un tableur exécute une cellule qui commence par `=`,
+> `+`, `-` ou `@`. À l'export, ces cellules sont précédées d'une apostrophe, qui les fait afficher
+> comme du texte (recommandation de l'OWASP) ; à l'import, cette apostrophe est retirée et la valeur
+> reste un simple texte dans le TOML. Fichiers importés limités à 1 Mio et 5 000 lignes, UTF-8 exigé
+> (dans Excel : *Enregistrer sous → CSV UTF-8*).
 
 ## Utilisation
 

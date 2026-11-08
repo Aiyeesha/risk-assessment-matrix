@@ -6,7 +6,7 @@ A **methodical risk register** for small and mid-sized organisations: identify, 
 treat, accept and review every risk, following a written and verifiable method. Aligned with
 **ISO/IEC 27005:2022** and **EBIOS Risk Manager** (ANSSI, version 1.5 of March 2024).
 
-> 🚧 **Work in progress** (v0.1.0). The method and the register are in place; references land in step 4.
+> 🚧 **Work in progress** (v0.1.0). Method, register, references and import/export are in place; reports land in step 5.
 
 ## What the repository will contain
 
@@ -17,7 +17,7 @@ treat, accept and review every risk, following a written and verifiable method. 
 | **Treatment and acceptance** | Reduce, accept, transfer or avoid; formal acceptance (who, when, why, until when) when the residual risk stays above the risk appetite. |
 | **Reviews and history** | Next review, overdue reviews and measures, change log. |
 | **Links** | Assets, threats and vulnerabilities, ISO/IEC 27001:2022 Annex A controls, MITRE ATT&CK techniques, and the [incident response](https://github.com/Aiyeesha/incident-response-playbook) playbook to apply if the risk materialises. |
-| **Tools** | `risk-check` (validation), `risk-report` (Markdown and HTML reports), `risk-export` (JSON, CSV protected against formula injection), web interface. |
+| **Tools** | `risk-check` (validation), `risk-report` (Markdown and HTML reports), `risk-export` and `risk-import` (JSON, CSV protected against formula injection), web interface. |
 
 ## Roadmap
 
@@ -26,7 +26,7 @@ treat, accept and review every risk, following a written and verifiable method. 
 | 1 | Repository, layout, TOML syntax check, CI | ✅ |
 | 2 | Method: TOML format, 5×5 and EBIOS RM 4×4 presets | ✅ |
 | 3 | Register: data model, consistency rules, `risk-check` | ✅ |
-| 4 | References (ISO/IEC 27001, ATT&CK, playbooks), safe CSV import and export | ⏳ |
+| 4 | References (ISO/IEC 27001, ATT&CK, playbooks), safe CSV import and export | ✅ |
 | 5 | Markdown and HTML reports: `risk-report` | ⏳ |
 | 6 | Assessment guide and example registers FR/EN → **v1.0.0** | ⏳ |
 | 7 | Web interface on GitHub Pages → **v1.1.0** | ⏳ |
@@ -144,6 +144,56 @@ with `--today`.
 register.private.toml: attention : R01.review : revue en retard (prévue le 2027-01-01)
 1 fichier(s) vérifié(s) — OK, 1 avertissement(s)
 ```
+
+## References
+
+Each risk — and each measure, for Annex A — can point to three frameworks:
+
+```toml
+iso27001 = ["8.7", "8.13"]    # ISO/IEC 27001:2022 Annex A controls
+attack = ["T1486", "T1490"]   # MITRE ATT&CK techniques of the scenario
+playbooks = ["P02"]           # playbook to apply if the risk materialises
+```
+
+| Framework | What `risk-check` checks |
+|---|---|
+| **ISO/IEC 27001:2022, Annex A** | The number exists: 5.1 to 5.37 (organisational), 6.1 to 6.8 (people), 7.1 to 7.14 (physical), 8.1 to 8.34 (technological). Only the numbers are in the repository: the text of the controls belongs to ISO. |
+| **MITRE ATT&CK** | The format: technique `T1234` or sub-technique `T1234.001`. The export adds the link to the [attack.mitre.org](https://attack.mitre.org/) page. |
+| **Playbooks** | The playbook is one of P01 to P07 of the [incident-response-playbook](https://github.com/Aiyeesha/incident-response-playbook) repository; the export gives its title and link in the register's language. |
+
+A duplicate identifier within a list is reported.
+
+> ⚠️ **Whether an ATT&CK technique exists is not checked.** The framework holds several hundred
+> techniques and changes twice a year: embedding it would mean keeping it up to date. Only the
+> format is checked; verify the identifier on attack.mitre.org.
+
+## Import and export
+
+```powershell
+risk-export register.private.toml -o register.json                     # full JSON (default)
+risk-export register.private.toml --format csv -o risks.csv --measures measures.csv
+risk-import risks.csv --measures measures.csv -o register.private.toml `
+    --lang en --method iso27005-5x5 --organisation "Atelier Lumen" --assessed-on 2026-09-01 --assessor "Security team"
+```
+
+- **`risk-export`** only exports a **valid** register (otherwise it prints its errors, exit code `1`).
+  - **JSON** (`schema_version` 1): the full register, method included, with the level of each score,
+    ATT&CK and playbook links, and the warnings at the reference date.
+  - **CSV**: a risks file (one row per risk, with computed levels and the number of open measures)
+    and, with `--measures`, a measures file. Separator `;` for a French register (French Excel), `,`
+    for an English one; option `--delimiter`. UTF-8 with BOM, recognised by Excel. Lists are written
+    `Email | Bank transfers`.
+- **`risk-import`** creates a TOML register from the same columns: an export edited in a spreadsheet
+  imports back as is. Badly written cells (date, integer, yes/no) are reported with their line and
+  nothing is written; otherwise the register is written, then checked, and what remains to complete
+  is listed (exit code `1`). History has no column: complete it in the TOML file.
+- Neither command overwrites an existing file without `--force`.
+
+> 🛡️ **Formula injection (CWE-1236).** A spreadsheet executes a cell starting with `=`, `+`, `-` or
+> `@`. On export, such cells are prefixed with an apostrophe, which makes them display as text (OWASP
+> recommendation); on import, that apostrophe is removed and the value stays plain text in the TOML
+> file. Imported files are limited to 1 MiB and 5,000 rows, UTF-8 required (in Excel: *Save as →
+> CSV UTF-8*).
 
 ## Usage
 

@@ -291,3 +291,50 @@ def test_toutes_les_erreurs_sont_collectees(data):
     risk(data, "R01")["owner"] = ""
     risk(data, "R03")["gdpr"] = "oui"
     assert len(errors(data)) == 3
+
+
+# ── Références : annexe A, ATT&CK, playbooks ────────────────
+def test_references_du_registre_de_reference(data):
+    register, _ = parse_register(data, METHODS, TODAY)
+    r01, r02, _r03 = register.risks
+    assert r01.iso27001 == ("8.7", "8.13")
+    assert r01.measures[0].iso27001 == ("8.13",)
+    assert r02.attack == ("T1566", "T1656")
+    assert r02.playbooks == ("P04", "P07")
+
+
+@pytest.mark.parametrize(
+    ("cle", "valeur", "attendu"),
+    [
+        ("iso27001", ["5.38"], "R01.iso27001[0] : « 5.38 » n'est pas une mesure de l'annexe A d'ISO/IEC 27001:2022"),
+        (
+            "iso27001",
+            ["A.8.13"],
+            "R01.iso27001[0] : « A.8.13 » n'est pas une mesure de l'annexe A d'ISO/IEC 27001:2022",
+        ),
+        ("iso27001", ["9.1"], "R01.iso27001[0] : « 9.1 » n'est pas une mesure de l'annexe A d'ISO/IEC 27001:2022"),
+        ("attack", ["T486"], "R01.attack[0] : « T486 » n'est pas un identifiant ATT&CK (T1234 ou T1234.001)"),
+        ("attack", ["t1486"], "R01.attack[0] : « t1486 » n'est pas un identifiant ATT&CK (T1234 ou T1234.001)"),
+        ("playbooks", ["P08"], "R01.playbooks[0] : playbook « P08 » inconnu (P01, P02, P03, P04, P05, P06, P07)"),
+        ("playbooks", ["P02", "P02"], "R01.playbooks[1] : « P02 » en double"),
+        ("playbooks", "P02", "R01.playbooks : liste attendue"),
+    ],
+)
+def test_references_invalides(data, cle, valeur, attendu):
+    risk(data, "R01")[cle] = valeur
+    (found,) = errors(data)
+    assert found.startswith(attendu)
+
+
+def test_reference_d_une_mesure(data):
+    risk(data, "R01")["measures"][1]["iso27001"] = ["8.35"]
+    (found,) = errors(data)
+    assert found.startswith("R01.measures[1].iso27001[0] : « 8.35 » n'est pas une mesure")
+
+
+def test_description_et_categorie_facultatives(data):
+    r03 = risk(data, "R03")
+    del r03["description"], r03["category"]
+    assert errors(data) == []
+    risk(data, "R02")["category"] = " "
+    assert errors(data) == ["R02.category : texte non vide attendu"]  # présente, elle ne peut pas être vide

@@ -16,6 +16,7 @@ from dataclasses import dataclass, field
 from datetime import date
 
 from risk_matrix.method import Method, _Reader
+from risk_matrix.references import PLAYBOOKS, annex_a_theme, is_attack_id
 
 # ─────────────────────────────────────────────────────────────
 # 1. Réglages
@@ -48,7 +49,11 @@ _RISK_KEYS = {
     "acceptance",
     "review",
     "history",
+    "iso27001",
+    "attack",
+    "playbooks",
 }
+_MEASURE_KEYS = {"title", "owner", "due", "status", "iso27001"}
 
 
 def add_months(start: date, months: int) -> date:
@@ -77,6 +82,7 @@ class Measure:
     owner: str
     due: date
     status: str
+    iso27001: tuple[str, ...] = ()  # mesures de l'annexe A mises en œuvre par cette action
 
 
 @dataclass(frozen=True)
@@ -124,6 +130,9 @@ class Risk:
     acceptance: Acceptance | None
     review: Review
     history: tuple[HistoryEntry, ...]
+    iso27001: tuple[str, ...] = ()  # mesures de l'annexe A d'ISO/IEC 27001:2022 qui traitent le risque
+    attack: tuple[str, ...] = ()  # techniques MITRE ATT&CK du scénario
+    playbooks: tuple[str, ...] = ()  # playbooks à appliquer si le risque se réalise
 
 
 @dataclass(frozen=True)
@@ -171,6 +180,32 @@ class _RegisterReader(_Reader):
 
     def strings(self, data: object, path: str) -> tuple[str, ...]:
         return tuple(self.string(item, f"{path}[{i}]") for i, item in enumerate(self.array(data, path)))
+
+    def optional(self, data: object, path: str) -> str:
+        """Texte facultatif : absent → "", présent → non vide."""
+        return "" if data is None else self.string(data, path)
+
+    def references(self, data: object, path: str, kind: str) -> tuple[str, ...]:
+        """Liste d'identifiants d'un référentiel (« iso27001 », « attack » ou « playbooks »), sans doublon."""
+        if data is None:
+            return ()
+        values = self.strings(data, path)
+        for i, value in enumerate(values):
+            if not value:
+                continue  # déjà signalé (texte vide)
+            if kind == "iso27001" and annex_a_theme(value) is None:
+                self.error(
+                    f"{path}[{i}]",
+                    f"« {value} » n'est pas une mesure de l'annexe A d'ISO/IEC 27001:2022 "
+                    "(5.1 à 5.37, 6.1 à 6.8, 7.1 à 7.14, 8.1 à 8.34)",
+                )
+            elif kind == "attack" and not is_attack_id(value):
+                self.error(f"{path}[{i}]", f"« {value} » n'est pas un identifiant ATT&CK (T1234 ou T1234.001)")
+            elif kind == "playbooks" and value not in PLAYBOOKS:
+                self.error(f"{path}[{i}]", f"playbook « {value} » inconnu ({', '.join(PLAYBOOKS)})")
+            if value in values[:i]:
+                self.error(f"{path}[{i}]", f"« {value} » en double")
+        return values
 
     def choice(self, data: object, path: str, allowed: tuple[str, ...]) -> str:
         if data not in allowed:
@@ -224,12 +259,13 @@ def _risk(
     for j, measure_item in enumerate(r.array(data.get("measures", []), f"{at}.measures")):
         mwhere = f"{at}.measures[{j}]"
         m = r.table(measure_item, mwhere)
-        r.unknown_keys(m, {"title", "owner", "due", "status"}, mwhere)
+        r.unknown_keys(m, _MEASURE_KEYS, mwhere)
         measure = Measure(
             r.string(m.get("title"), f"{mwhere}.title"),
             r.string(m.get("owner"), f"{mwhere}.owner"),
             r.day(m.get("due"), f"{mwhere}.due"),
             r.choice(m.get("status"), f"{mwhere}.status", MEASURE_STATUSES),
+            r.references(m.get("iso27001"), f"{mwhere}.iso27001", "iso27001"),
         )
         if status == "active" and measure.status != "done" and date.min < measure.due < today:
             warn.append(f"{mwhere} : mesure en retard (échéance {measure.due.isoformat()}) — « {measure.title} »")
@@ -333,8 +369,8 @@ def _risk(
     return Risk(
         id=risk_id,
         title=r.string(data.get("title"), f"{at}.title"),
-        description=r.string(data.get("description"), f"{at}.description"),
-        category=r.string(data.get("category"), f"{at}.category"),
+        description=r.optional(data.get("description"), f"{at}.description"),
+        category=r.optional(data.get("category"), f"{at}.category"),
         owner=r.string(data.get("owner"), f"{at}.owner"),
         status=status,
         assets=r.strings(data.get("assets"), f"{at}.assets"),
@@ -352,6 +388,9 @@ def _risk(
         acceptance=acceptance,
         review=review,
         history=tuple(history),
+        iso27001=r.references(data.get("iso27001"), f"{at}.iso27001", "iso27001"),
+        attack=r.references(data.get("attack"), f"{at}.attack", "attack"),
+        playbooks=r.references(data.get("playbooks"), f"{at}.playbooks", "playbooks"),
     )
 
 
