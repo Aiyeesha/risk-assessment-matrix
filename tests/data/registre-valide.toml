@@ -1,0 +1,90 @@
+# ─────────────────────────────────────────────────────────────
+# Registre de référence des tests : VALIDE et SANS AVERTISSEMENT au 2026-11-08.
+# Chaque test en lit une copie et y casse une seule chose.
+#   - R01 : réduction en cours (mesure inachevée) → pas encore d'acceptation formelle ;
+#   - R02 : réduction terminée, résiduel « moderate » au-dessus de l'appétence → acceptation ;
+#   - R03 : transfert à un assureur, résiduel « low » → rien à accepter.
+# ─────────────────────────────────────────────────────────────
+kind = "register"
+format = 1
+method = "iso27005-5x5"
+lang = "fr"
+organisation = "Organisation de test"
+assessed_on = 2026-09-01
+assessor = "Équipe sécurité"
+
+[[risks]]
+id = "R01"
+title = "Rançongiciel sur les serveurs de fichiers"
+description = "Chiffrement des partages réseau après compromission d'un poste."
+category = "Cybersécurité"
+owner = "Responsable informatique"
+assets = ["Serveur de fichiers", "Sauvegardes"]
+threat = "Groupe criminel diffusant un rançongiciel"
+vulnerability = "Sauvegardes accessibles depuis le réseau bureautique"
+gdpr = true
+nis2 = false
+inherent = { likelihood = 4, impact = 5 }
+existing_controls = ["Antivirus sur les postes"]
+residual = { likelihood = 3, impact = 4 }
+treatment = "reduce"
+review = { last = 2026-10-01, next = 2027-01-01 }
+
+[[risks.measures]]
+title = "Sauvegardes hors ligne quotidiennes"
+owner = "Responsable informatique"
+due = 2026-10-15
+status = "done"
+
+[[risks.measures]]
+title = "EDR sur tous les postes"
+owner = "Prestataire infogérance"
+due = 2027-01-31
+status = "in-progress"
+
+[[risks.history]]
+on = 2026-09-01
+by = "Équipe sécurité"
+change = "Création du risque"
+
+[[risks.history]]
+on = 2026-10-15
+by = "Responsable informatique"
+change = "Sauvegardes hors ligne en place"
+
+[[risks]]
+id = "R02"
+title = "Hameçonnage ciblant la comptabilité"
+description = "Fraude au virement par usurpation d'un fournisseur."
+category = "Fraude"
+owner = "Directrice administrative et financière"
+assets = ["Messagerie", "Virements"]
+threat = "Fraudeur se faisant passer pour un fournisseur"
+vulnerability = "Changement de RIB sans contre-appel"
+inherent = { likelihood = 4, impact = 3 }
+existing_controls = []
+residual = { likelihood = 2, impact = 3 }
+treatment = "reduce"
+review = { last = 2026-09-15, next = 2027-03-15 }
+acceptance = { by = "Claire Martin", role = "Responsable du risque", on = 2026-09-15, until = 2027-09-15, rationale = "Risque résiduel jugé acceptable après mise en place du contre-appel." }
+
+[[risks.measures]]
+title = "Contre-appel obligatoire avant tout changement de RIB"
+owner = "Directrice administrative et financière"
+due = 2026-09-10
+status = "done"
+
+[[risks]]
+id = "R03"
+title = "Vol d'un ordinateur portable"
+description = "Perte ou vol d'un portable en déplacement."
+category = "Matériel"
+owner = "Responsable informatique"
+assets = ["Ordinateurs portables"]
+threat = "Vol opportuniste"
+vulnerability = "Usage nomade fréquent"
+inherent = { likelihood = 3, impact = 2 }
+residual = { likelihood = 2, impact = 2 }
+treatment = "transfer"
+transfer = { to = "Assureur (contrat multirisque)" }
+review = { last = 2026-06-01, next = 2027-06-01 }

@@ -1,9 +1,10 @@
 """
-Tests de « risk-check », étape 1 : lecture des fichiers et syntaxe TOML.
+Tests de « risk-check » : lecture des fichiers, syntaxe TOML, ligne de commande.
 
 Chaque test construit ses fichiers dans un dossier temporaire (tmp_path).
 """
 
+from datetime import date
 from importlib.metadata import version
 from pathlib import Path
 
@@ -14,6 +15,9 @@ from risk_matrix.check import MAX_BYTES, iter_toml, load_toml, main, run_checks
 
 # Méthode valide de référence : le préréglage 5×5 du dépôt
 METHODE = (Path(__file__).parents[1] / "methods" / "iso27005-5x5.toml").read_text(encoding="utf-8")
+# Registre valide et sans avertissement au 2026-11-08
+REGISTRE = (Path(__file__).parent / "data" / "registre-valide.toml").read_text(encoding="utf-8")
+JOUR = "2026-11-08"
 
 
 def write(root: Path, relative: str, content: str | bytes) -> Path:
@@ -86,7 +90,7 @@ def test_fichier_designe_directement(tmp_path):
 
 def test_plusieurs_problemes(tmp_path):
     write(tmp_path, "a.toml", "x = \n")
-    write(tmp_path, "b.toml", 'kind = "register"\n')
+    write(tmp_path, "b.toml", METHODE)
     write(tmp_path, "c.toml", "[t\n")
     count, problems = run_checks([tmp_path])
     assert count == 3
@@ -98,20 +102,20 @@ def test_plusieurs_problemes(tmp_path):
 def depot(tmp_path, monkeypatch):
     """Dossier de travail avec les dossiers vérifiés par défaut."""
     write(tmp_path, "methods/5x5.toml", METHODE)
-    write(tmp_path, "examples/fr/registre.toml", 'kind = "register"\n')
+    write(tmp_path, "examples/fr/registre.toml", REGISTRE)
     write(tmp_path, "pyproject.toml", "[project\n")  # hors des dossiers vérifiés : ignoré
     monkeypatch.chdir(tmp_path)
     return tmp_path
 
 
 def test_dossiers_par_defaut(depot, capsys):
-    assert main([]) == 0
+    assert main(["--today", JOUR]) == 0
     assert capsys.readouterr().out.strip() == "2 fichier(s) vérifié(s) — OK"
 
 
 def test_probleme_au_format_editeur(depot, capsys):
     write(depot, "methods/casse.toml", "a = 1\n\nb = \n")
-    assert main([]) == 1
+    assert main(["--today", JOUR]) == 1
     sortie = capsys.readouterr().out.splitlines()
     assert sortie[0].startswith("methods/casse.toml:3: syntaxe TOML : ")
     assert sortie[-1] == "3 fichier(s) vérifié(s) — 1 problème(s)"
@@ -151,3 +155,58 @@ def test_preréglages_du_depot_valides():
     count, problems = run_checks([Path(__file__).parents[1] / "methods"])
     assert count == 2
     assert problems == []
+
+
+# ── Registres ───────────────────────────────────────────────
+def test_registre_verifie_avec_sa_methode(tmp_path):
+    write(tmp_path, "methods/5x5.toml", METHODE)
+    write(tmp_path, "r.toml", REGISTRE.replace('role = "Responsable du risque"', 'role = "Stagiaire"'))
+    _count, problems = run_checks([tmp_path], today=date(2026, 11, 8))
+    assert [p.message.split(" : ")[0] for p in problems] == ["R02.acceptance.role"]
+
+
+def test_methode_lue_dans_le_dossier_des_methodes(tmp_path):
+    """Seul le registre est vérifié ; sa méthode vient de --methods, sans être recomptée."""
+    write(tmp_path, "methodes/5x5.toml", METHODE)
+    registre = write(tmp_path, "r.toml", REGISTRE)
+    count, problems = run_checks([registre], [tmp_path / "methodes"], date(2026, 11, 8))
+    assert (count, problems) == (1, [])
+
+
+def test_methode_absente(tmp_path):
+    registre = write(tmp_path, "r.toml", REGISTRE)
+    _count, (problem,) = run_checks([registre], today=date(2026, 11, 8))
+    assert problem.message == "method : méthode « iso27005-5x5 » introuvable (disponibles : aucune)"
+
+
+def test_avertissements_n_echouent_pas(depot, capsys):
+    assert main(["--today", "2027-01-15"]) == 0
+    sortie = capsys.readouterr().out.splitlines()
+    assert sortie[0] == "examples/fr/registre.toml: attention : R01.review : revue en retard (prévue le 2027-01-01)"
+    assert sortie[-1] == "2 fichier(s) vérifié(s) — OK, 1 avertissement(s)"
+
+
+def test_mode_strict(depot, capsys):
+    assert main(["--today", "2027-01-15", "--strict"]) == 1
+
+
+def test_erreurs_et_avertissements_comptes_a_part(depot, capsys):
+    write(depot, "methods/casse.toml", "b = \n")
+    assert main(["--today", "2027-01-15"]) == 1
+    assert capsys.readouterr().out.splitlines()[-1] == "3 fichier(s) vérifié(s) — 1 problème(s), 1 avertissement(s)"
+
+
+def test_registre_designe_seul_utilise_le_dossier_methods(depot, capsys):
+    assert main(["examples/fr/registre.toml", "--today", JOUR]) == 0
+    assert capsys.readouterr().out.strip() == "1 fichier(s) vérifié(s) — OK"
+
+
+def test_date_de_reference_invalide(depot, capsys):
+    with pytest.raises(SystemExit) as fin:
+        main(["--today", "08/11/2026"])
+    assert fin.value.code == 2
+    assert "date invalide « 08/11/2026 » (format AAAA-MM-JJ)" in capsys.readouterr().err
+
+
+def test_dossier_de_methodes_introuvable(depot, capsys):
+    assert main(["--methods", "absent"]) == 2

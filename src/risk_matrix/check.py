@@ -4,9 +4,15 @@ Vérification des méthodes d'évaluation et des registres de risques (commande 
 Chaque fichier TOML est lu et sa SYNTAXE vérifiée (message « fichier:ligne: message »,
 reconnu par les éditeurs et par la CI), puis son CONTENU selon son type :
   - kind = "method"   : méthode d'évaluation (échelles, niveaux, grille, acceptation) ;
-  - kind = "register" : registre de risques (contrôles de contenu ajoutés à l'étape 3).
+  - kind = "register" : registre de risques, vérifié avec la méthode qu'il désigne.
 
-Codes de retour : 0 = tout est valide, 1 = au moins un problème, 2 = mauvais usage.
+Deux sortes de messages :
+  - les ERREURS (donnée invalide ou incohérente) ;
+  - les AVERTISSEMENTS (« attention : »), pour ce qui est échu à la date du jour : revue,
+    mesure ou acceptation dépassée. Ils n'échouent qu'avec --strict.
+
+Codes de retour : 0 = valide, 1 = au moins une erreur (ou un avertissement avec --strict),
+2 = mauvais usage.
 """
 
 from __future__ import annotations
@@ -17,17 +23,21 @@ import sys
 import tomllib
 from collections.abc import Iterable
 from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 
 from risk_matrix import __version__
 from risk_matrix.console import setup_streams
 from risk_matrix.method import Method, parse_method
+from risk_matrix.register import parse_register
 
 # ─────────────────────────────────────────────────────────────
 # 1. Réglages
 # ─────────────────────────────────────────────────────────────
 # Dossiers vérifiés par défaut, depuis la racine du dépôt
 DEFAULT_FOLDERS = ("methods", "examples")
+# Dossier des méthodes mises à disposition des registres, même quand on ne vérifie qu'un registre
+DEFAULT_METHODS = "methods"
 # Un registre réel tient en quelques centaines de Ko : au-delà, on refuse de lire
 # (protection contre un fichier démesuré, volontaire ou non)
 MAX_BYTES = 1_048_576
@@ -46,6 +56,7 @@ class Problem:
     path: Path
     message: str
     line: int | None = None
+    warning: bool = False  # avertissement : à traiter, mais le fichier reste valide
 
     def render(self, root: Path) -> str:
         """Format « chemin:ligne: message », chemin relatif à la racine quand c'est possible."""
@@ -54,7 +65,7 @@ class Problem:
         except ValueError:
             shown = self.path.as_posix()
         where = f"{shown}:{self.line}" if self.line else shown
-        return f"{where}: {self.message}"
+        return f"{where}: {'attention : ' if self.warning else ''}{self.message}"
 
 
 # ─────────────────────────────────────────────────────────────
@@ -102,39 +113,89 @@ def iter_toml(targets: Iterable[Path]) -> list[Path]:
     return found
 
 
-def check_file(path: Path) -> tuple[Method | None, list[Problem]]:
-    """Syntaxe, puis contenu selon le type ; renvoie la méthode lue s'il s'agit d'une méthode valide."""
-    data, problems = load_toml(path)
-    if data is None:
-        return None, problems
-    kind = data.get("kind")
-    if kind not in KINDS:
-        return None, [Problem(path, f"kind : « {' » ou « '.join(KINDS)} » attendu en tête de fichier")]
-    if kind == "method":
-        method, errors = parse_method(data)
-        return method, [Problem(path, message) for message in errors]
-    return None, []  # registre : contrôles de contenu à l'étape 3
+def _same(a: Path, b: Path) -> bool:
+    try:
+        return a.resolve() == b.resolve()
+    except OSError:
+        return False
 
 
-def run_checks(paths: Iterable[Path]) -> tuple[int, list[Problem]]:
-    """Vérifie chaque fichier ; renvoie (nombre de fichiers lus, problèmes)."""
+def run_checks(
+    paths: Iterable[Path], methods_dirs: Iterable[Path] = (), today: date | None = None
+) -> tuple[int, list[Problem]]:
+    """
+    Vérifie chaque fichier ; renvoie (nombre de fichiers vérifiés, problèmes et avertissements).
+
+    Ordre : toutes les MÉTHODES d'abord (celles des chemins vérifiés, puis celles de « methods_dirs »,
+    lues sans être signalées), puis les REGISTRES, qui ont besoin d'elles.
+    """
+    today = today or date.today()
     files = iter_toml(paths)
     problems: list[Problem] = []
-    seen: dict[str, Path] = {}
+    methods: dict[str, Method] = {}
+    origin: dict[str, Path] = {}
+    registers: list[tuple[Path, dict]] = []
+
+    # ── 1. Lecture, type de fichier et méthodes ─────────────
     for path in files:
-        method, found = check_file(path)
+        data, found = load_toml(path)
         problems.extend(found)
-        # Deux méthodes ne peuvent pas porter le même identifiant : un registre ne saurait laquelle utiliser
-        if method is not None:
-            if method.id in seen:
-                problems.append(Problem(path, f"id : « {method.id} » déjà utilisé par {seen[method.id].name}"))
-            seen.setdefault(method.id, path)
+        if data is None:
+            continue
+        kind = data.get("kind")
+        if kind not in KINDS:
+            problems.append(Problem(path, f"kind : « {' » ou « '.join(KINDS)} » attendu en tête de fichier"))
+        elif kind == "register":
+            registers.append((path, data))
+        else:
+            method, errors = parse_method(data)
+            problems.extend(Problem(path, message) for message in errors)
+            if method is None:
+                continue
+            # Deux méthodes ne peuvent pas porter le même identifiant : un registre ne saurait laquelle utiliser
+            if method.id in origin:
+                problems.append(Problem(path, f"id : « {method.id} » déjà utilisé par {origin[method.id].name}"))
+                continue
+            methods[method.id], origin[method.id] = method, path
+
+    # ── 2. Méthodes mises à disposition (non vérifiées ici) ─
+    for path in iter_toml(d for d in methods_dirs if d.is_dir()):
+        if any(_same(path, f) for f in files):
+            continue
+        data, _ = load_toml(path)
+        if data is not None and data.get("kind") == "method":
+            method, _ = parse_method(data)
+            if method is not None:
+                methods.setdefault(method.id, method)
+
+    # ── 3. Registres ────────────────────────────────────────
+    for path, data in registers:
+        _register, findings = parse_register(data, methods, today)
+        problems.extend(Problem(path, message) for message in findings.errors)
+        problems.extend(Problem(path, message, warning=True) for message in findings.warnings)
+    problems.sort(key=lambda p: files.index(p.path))  # dans l'ordre des fichiers, erreurs puis avertissements
     return len(files), problems
 
 
 # ─────────────────────────────────────────────────────────────
 # 4. Ligne de commande
 # ─────────────────────────────────────────────────────────────
+def _day(value: str) -> date:
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"date invalide « {value} » (format AAAA-MM-JJ)") from None
+
+
+def summary(count: int, problems: list[Problem]) -> str:
+    errors = sum(not p.warning for p in problems)
+    warnings = len(problems) - errors
+    parts = [f"{errors} problème(s)" if errors else "OK"]
+    if warnings:
+        parts.append(f"{warnings} avertissement(s)")
+    return f"{count} fichier(s) vérifié(s) — {', '.join(parts)}"
+
+
 def main(argv: list[str] | None = None) -> int:
     setup_streams()
     parser = argparse.ArgumentParser(
@@ -147,22 +208,35 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help=f"fichiers ou dossiers à vérifier (défaut : {', '.join(DEFAULT_FOLDERS)} du dossier courant)",
     )
+    parser.add_argument(
+        "--methods",
+        type=Path,
+        action="append",
+        metavar="DOSSIER",
+        help=f"dossier de méthodes disponibles pour les registres (répétable ; défaut : {DEFAULT_METHODS})",
+    )
+    parser.add_argument(
+        "--today", type=_day, metavar="AAAA-MM-JJ", help="date de référence des échéances (défaut : aujourd'hui)"
+    )
+    parser.add_argument("--strict", action="store_true", help="les avertissements font aussi échouer (code 1)")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     args = parser.parse_args(argv)
 
     root = Path.cwd()
+    asked = list(args.paths) + list(args.methods or [])
+    missing = [p for p in asked if not p.exists()]
+    if missing:
+        print(f"Erreur : introuvable : {', '.join(map(str, missing))}", file=sys.stderr)
+        return 2
     if args.paths:
-        missing = [p for p in args.paths if not p.exists()]
-        if missing:
-            print(f"Erreur : introuvable : {', '.join(map(str, missing))}", file=sys.stderr)
-            return 2
         targets = list(args.paths)
     else:
         targets = [root / folder for folder in DEFAULT_FOLDERS if (root / folder).is_dir()]
+    methods_dirs = args.methods or [root / DEFAULT_METHODS]
 
-    count, problems = run_checks(targets)
+    count, problems = run_checks(targets, methods_dirs, args.today)
     for problem in problems:
         print(problem.render(root))
-    status = "OK" if not problems else f"{len(problems)} problème(s)"
-    print(f"{count} fichier(s) vérifié(s) — {status}")
-    return 1 if problems else 0
+    print(summary(count, problems))
+    failed = any(not p.warning for p in problems) or (args.strict and bool(problems))
+    return 1 if failed else 0
