@@ -1,0 +1,135 @@
+# ─────────────────────────────────────────────────────────────
+# Méthode 5×5 : vraisemblance × impact
+#
+# Préréglage de départ, compatible avec la démarche d'ISO/IEC 27005:2022 (qui laisse chaque
+# organisation définir ses propres échelles et critères). Les seuils ci-dessous sont des
+# valeurs de départ réalistes pour une PME ou une ETI : à valider par la direction.
+#
+# Lecture de la grille : une ligne par niveau de VRAISEMBLANCE (1 en haut du fichier),
+# une colonne par niveau d'IMPACT (1 à gauche). Elle reprend la règle usuelle
+# « score = vraisemblance × impact » : 1–4 faible, 5–9 modéré, 10–16 élevé, 20–25 critique.
+# ─────────────────────────────────────────────────────────────
+kind = "method"
+format = 1
+id = "iso27005-5x5"
+name = { fr = "Matrice 5×5 — vraisemblance × impact", en = "5×5 matrix — likelihood × impact" }
+references = ["ISO/IEC 27005:2022", "ISO/IEC 27001:2022, 6.1.2"]
+
+# ── Axe 1 : vraisemblance ────────────────────────────────────
+[likelihood]
+name = { fr = "Vraisemblance", en = "Likelihood" }
+
+[[likelihood.levels]]
+value = 1
+label = { fr = "Rare", en = "Rare" }
+description = { fr = "Ne s'est jamais produit ici ; moins d'une fois en dix ans.", en = "Has never happened here; less than once in ten years." }
+
+[[likelihood.levels]]
+value = 2
+label = { fr = "Peu probable", en = "Unlikely" }
+description = { fr = "Peut se produire, sans signe d'attaque ciblée ; une fois en cinq à dix ans.", en = "Could happen, with no sign of targeted attack; once in five to ten years." }
+
+[[likelihood.levels]]
+value = 3
+label = { fr = "Possible", en = "Possible" }
+description = { fr = "Déjà vu dans le secteur ou tenté ici ; une fois en un à cinq ans.", en = "Seen in the sector or attempted here; once in one to five years." }
+
+[[likelihood.levels]]
+value = 4
+label = { fr = "Probable", en = "Likely" }
+description = { fr = "Tentatives régulières, mesures incomplètes ; au moins une fois par an.", en = "Regular attempts, incomplete measures; at least once a year." }
+
+[[likelihood.levels]]
+value = 5
+label = { fr = "Quasi certain", en = "Almost certain" }
+description = { fr = "En cours ou attendu à court terme ; plusieurs fois par an.", en = "Ongoing or expected soon; several times a year." }
+
+# ── Axe 2 : impact ───────────────────────────────────────────
+[impact]
+name = { fr = "Impact", en = "Impact" }
+
+[[impact.levels]]
+value = 1
+label = { fr = "Négligeable", en = "Negligible" }
+description = { fr = "Aucun effet visible sur l'activité ni sur les données.", en = "No visible effect on operations or data." }
+
+[[impact.levels]]
+value = 2
+label = { fr = "Mineur", en = "Minor" }
+description = { fr = "Gêne limitée à une équipe, moins d'une journée ; données internes peu sensibles.", en = "Disruption limited to one team, less than a day; low-sensitivity internal data." }
+
+[[impact.levels]]
+value = 3
+label = { fr = "Modéré", en = "Moderate" }
+description = { fr = "Service important dégradé plusieurs jours ou données personnelles exposées en petit nombre.", en = "Important service degraded for several days, or a small amount of personal data exposed." }
+
+[[impact.levels]]
+value = 4
+label = { fr = "Majeur", en = "Major" }
+description = { fr = "Activité principale interrompue, notification à la CNIL, pertes financières significatives.", en = "Core business interrupted, notification to the data protection authority, significant financial losses." }
+
+[[impact.levels]]
+value = 5
+label = { fr = "Critique", en = "Critical" }
+description = { fr = "Survie de l'organisation menacée : arrêt prolongé, fuite massive, sanctions lourdes.", en = "Survival of the organisation at stake: prolonged shutdown, massive breach, heavy penalties." }
+
+# ── Niveaux de risque, du moins grave au plus grave ──────────
+[[levels]]
+id = "low"
+label = { fr = "Faible", en = "Low" }
+color = "#2e7d4f"
+review_months = 12
+guidance = { fr = "Accepté en l'état ; surveillance lors de la revue annuelle.", en = "Accepted as is; monitored at the annual review." }
+
+[[levels]]
+id = "moderate"
+label = { fr = "Modéré", en = "Moderate" }
+color = "#8a6d00"
+review_months = 6
+guidance = { fr = "Traitement planifié dans l'année, ou acceptation par le responsable du risque.", en = "Treatment planned within the year, or acceptance by the risk owner." }
+
+[[levels]]
+id = "high"
+label = { fr = "Élevé", en = "High" }
+color = "#c25a00"
+review_months = 3
+guidance = { fr = "Traitement prioritaire sous 3 mois ; acceptation par la direction seulement.", en = "Priority treatment within 3 months; acceptance by management only." }
+
+[[levels]]
+id = "critical"
+label = { fr = "Critique", en = "Critical" }
+color = "#b3261e"
+review_months = 1
+guidance = { fr = "Traitement immédiat ; acceptation exceptionnelle par la direction générale, de courte durée.", en = "Immediate treatment; exceptional, short-lived acceptance by executive management." }
+
+# ── Grille : rows[vraisemblance - 1][impact - 1] ─────────────
+[grid]
+#         impact :   1           2           3           4           5
+rows = [
+    ["low",      "low",      "low",      "low",      "moderate"], # vraisemblance 1
+    ["low",      "low",      "moderate", "moderate", "high"],     # vraisemblance 2
+    ["low",      "moderate", "moderate", "high",     "high"],     # vraisemblance 3
+    ["low",      "moderate", "high",     "high",     "critical"], # vraisemblance 4
+    ["moderate", "high",     "high",     "critical", "critical"], # vraisemblance 5
+]
+
+# ── Appétence et acceptation ─────────────────────────────────
+# Au-delà du niveau « appetite », accepter un risque exige une acceptation FORMELLE,
+# par l'autorité désignée et pour une durée limitée.
+[acceptance]
+appetite = "low"
+
+[[acceptance.authorities]]
+level = "moderate"
+by = { fr = "Responsable du risque", en = "Risk owner" }
+max_months = 12
+
+[[acceptance.authorities]]
+level = "high"
+by = { fr = "Direction", en = "Management" }
+max_months = 6
+
+[[acceptance.authorities]]
+level = "critical"
+by = { fr = "Direction générale", en = "Executive management" }
+max_months = 3

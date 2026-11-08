@@ -18,3 +18,10 @@ française, renommée `archive-matrice-risques`).
 - CI : tests sous Linux et Windows avec Python 3.11 et 3.14, analyse Ruff, vérification des fichiers
   TOML du dépôt ; Dependabot pour les actions GitHub et les outils Python.
 - README en français et en anglais, politique de sécurité, licence MIT.
+- **Méthode d'évaluation** (`kind = "method"`, module `method.py`) : axes de vraisemblance et d'impact,
+  niveaux de risque, grille explicite case par case, appétence et autorités d'acceptation, textes en
+  français et en anglais. `risk-check` vérifie clés, textes, dimensions et monotonie de la grille,
+  cohérence des fréquences de revue et des durées d'acceptation, autorités au regard de l'appétence ;
+  chaque fichier doit déclarer son type (`kind`), et deux méthodes ne peuvent pas partager un `id`.
+- Préréglages `iso27005-5x5` (vraisemblance × impact, règle du produit) et `ebios-rm-4x4` (échelles
+  d'EBIOS Risk Manager 1.5, grille d'acceptation à trois zones donnée en exemple).

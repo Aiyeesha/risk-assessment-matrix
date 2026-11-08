@@ -12,6 +12,9 @@ import pytest
 import risk_matrix
 from risk_matrix.check import MAX_BYTES, iter_toml, load_toml, main, run_checks
 
+# Méthode valide de référence : le préréglage 5×5 du dépôt
+METHODE = (Path(__file__).parents[1] / "methods" / "iso27005-5x5.toml").read_text(encoding="utf-8")
+
 
 def write(root: Path, relative: str, content: str | bytes) -> Path:
     path = root / relative
@@ -83,7 +86,7 @@ def test_fichier_designe_directement(tmp_path):
 
 def test_plusieurs_problemes(tmp_path):
     write(tmp_path, "a.toml", "x = \n")
-    write(tmp_path, "b.toml", "ok = true\n")
+    write(tmp_path, "b.toml", 'kind = "register"\n')
     write(tmp_path, "c.toml", "[t\n")
     count, problems = run_checks([tmp_path])
     assert count == 3
@@ -94,8 +97,8 @@ def test_plusieurs_problemes(tmp_path):
 @pytest.fixture
 def depot(tmp_path, monkeypatch):
     """Dossier de travail avec les dossiers vérifiés par défaut."""
-    write(tmp_path, "methods/5x5.toml", 'nom = "5×5"\n')
-    write(tmp_path, "examples/fr/registre.toml", 'organisation = "Atelier Lumen"\n')
+    write(tmp_path, "methods/5x5.toml", METHODE)
+    write(tmp_path, "examples/fr/registre.toml", 'kind = "register"\n')
     write(tmp_path, "pyproject.toml", "[project\n")  # hors des dossiers vérifiés : ignoré
     monkeypatch.chdir(tmp_path)
     return tmp_path
@@ -122,3 +125,29 @@ def test_chemin_introuvable(depot, capsys):
 def test_chemin_explicite(depot, capsys):
     assert main([str(depot / "methods")]) == 0
     assert "1 fichier(s) vérifié(s) — OK" in capsys.readouterr().out
+
+
+# ── Type de fichier et méthodes ─────────────────────────────
+def test_type_de_fichier_obligatoire(tmp_path):
+    write(tmp_path, "m.toml", 'nom = "sans type"\n')
+    _count, (problem,) = run_checks([tmp_path])
+    assert problem.message == "kind : « method » ou « register » attendu en tête de fichier"
+
+
+def test_methode_invalide_signalee_avec_le_chemin_du_champ(tmp_path):
+    write(tmp_path, "m.toml", METHODE.replace('appetite = "low"', 'appetite = "inconnu"'))
+    _count, problems = run_checks([tmp_path])
+    assert [p.message for p in problems] == ["acceptance.appetite : niveau inconnu « inconnu »"]
+
+
+def test_identifiant_de_methode_en_double(tmp_path):
+    write(tmp_path, "a.toml", METHODE)
+    write(tmp_path, "b.toml", METHODE)
+    _count, problems = run_checks([tmp_path])
+    assert [(p.path.name, p.message) for p in problems] == [("b.toml", "id : « iso27005-5x5 » déjà utilisé par a.toml")]
+
+
+def test_preréglages_du_depot_valides():
+    count, problems = run_checks([Path(__file__).parents[1] / "methods"])
+    assert count == 2
+    assert problems == []

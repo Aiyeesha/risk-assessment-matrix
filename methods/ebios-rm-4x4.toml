@@ -1,0 +1,114 @@
+# ─────────────────────────────────────────────────────────────
+# Méthode EBIOS Risk Manager 4×4 : vraisemblance V1–V4 × gravité G1–G4
+#
+# Libellés des niveaux repris des fiches méthodes de l'ANSSI (EBIOS RM, version 1.5 de mars 2024) :
+#   - gravité G1 Mineure, G2 Significative, G3 Grave, G4 Critique (fiche « Évaluer la gravité des
+#     événements redoutés », atelier 1) ;
+#   - vraisemblance V1 Peu vraisemblable, V3 Très vraisemblable, V4 Quasi certain (fiche « Évaluer
+#     la vraisemblance des scénarios opérationnels », atelier 4). Le libellé de V2 n'y figure pas en
+#     toutes lettres : « Vraisemblable » est retenu ici, dans la continuité de l'échelle.
+# Les DESCRIPTIONS sont reformulées (pas de reprise du texte de l'ANSSI). L'ANSSI présente ces
+# échelles comme génériques, à adapter à chaque organisation.
+#
+# La grille d'acceptation (atelier 5) n'est pas imposée par la méthode : celle-ci est un exemple
+# à trois zones — acceptable en l'état, tolérable sous contrôle, inacceptable.
+# ─────────────────────────────────────────────────────────────
+kind = "method"
+format = 1
+id = "ebios-rm-4x4"
+name = { fr = "EBIOS Risk Manager — vraisemblance V1–V4 × gravité G1–G4", en = "EBIOS Risk Manager — likelihood V1–V4 × severity G1–G4" }
+references = ["EBIOS Risk Manager 1.5 (ANSSI, 2024)", "ISO/IEC 27005:2022"]
+
+# ── Axe 1 : vraisemblance (V1 à V4) ──────────────────────────
+[likelihood]
+name = { fr = "Vraisemblance", en = "Likelihood" }
+
+[[likelihood.levels]]
+value = 1
+label = { fr = "V1 — Peu vraisemblable", en = "V1 — Unlikely" }
+description = { fr = "Le scénario a peu de chances d'aboutir : source de risque peu motivée ou chemin d'attaque difficile.", en = "The scenario is unlikely to succeed: weakly motivated risk origin or difficult attack path." }
+
+[[likelihood.levels]]
+value = 2
+label = { fr = "V2 — Vraisemblable", en = "V2 — Likely" }
+description = { fr = "Le scénario peut aboutir : moyens d'attaque accessibles, défenses partielles.", en = "The scenario may succeed: attack means available, partial defences." }
+
+[[likelihood.levels]]
+value = 3
+label = { fr = "V3 — Très vraisemblable", en = "V3 — Very likely" }
+description = { fr = "Le scénario a de fortes chances d'aboutir : source de risque déterminée, faiblesses connues.", en = "The scenario is very likely to succeed: determined risk origin, known weaknesses." }
+
+[[likelihood.levels]]
+value = 4
+label = { fr = "V4 — Quasi certain", en = "V4 — Almost certain" }
+description = { fr = "Le scénario aboutira presque sûrement, ou est déjà en cours.", en = "The scenario will almost surely succeed, or is already under way." }
+
+# ── Axe 2 : gravité (G1 à G4) ────────────────────────────────
+[impact]
+name = { fr = "Gravité", en = "Severity" }
+
+[[impact.levels]]
+value = 1
+label = { fr = "G1 — Mineure", en = "G1 — Minor" }
+description = { fr = "Conséquences absorbées sans difficulté par les marges de l'organisation.", en = "Consequences easily absorbed by the organisation's margins." }
+
+[[impact.levels]]
+value = 2
+label = { fr = "G2 — Significative", en = "G2 — Significant" }
+description = { fr = "Fonctionnement dégradé mais maîtrisé, sans atteinte à la sécurité des personnes.", en = "Degraded but controlled operation, with no harm to people's safety." }
+
+[[impact.levels]]
+value = 3
+label = { fr = "G3 — Grave", en = "G3 — Severe" }
+description = { fr = "Fonctionnement très dégradé, forte baisse des performances.", en = "Severely degraded operation, sharp drop in performance." }
+
+[[impact.levels]]
+value = 4
+label = { fr = "G4 — Critique", en = "G4 — Critical" }
+description = { fr = "Activité impossible en tout ou partie ; survie de l'organisation menacée.", en = "Business impossible in whole or in part; survival of the organisation at stake." }
+
+# ── Niveaux de risque : les trois zones de la grille d'acceptation ──
+[[levels]]
+id = "acceptable"
+label = { fr = "Acceptable en l'état", en = "Acceptable as is" }
+color = "#2e7d4f"
+review_months = 12
+guidance = { fr = "Aucune mesure supplémentaire requise ; revu lors du cycle stratégique.", en = "No additional measure required; reviewed at the strategic cycle." }
+
+[[levels]]
+id = "tolerable"
+label = { fr = "Tolérable sous contrôle", en = "Tolerable under control" }
+color = "#c25a00"
+review_months = 6
+guidance = { fr = "Mesures de réduction à planifier ; suivi au cycle opérationnel.", en = "Reduction measures to plan; tracked at the operational cycle." }
+
+[[levels]]
+id = "unacceptable"
+label = { fr = "Inacceptable", en = "Unacceptable" }
+color = "#b3261e"
+review_months = 3
+guidance = { fr = "Traitement obligatoire ; acceptation exceptionnelle, motivée et de courte durée.", en = "Treatment mandatory; exceptional, justified and short-lived acceptance only." }
+
+# ── Grille : rows[vraisemblance - 1][gravité - 1] ────────────
+[grid]
+#         gravité :    G1            G2            G3              G4
+rows = [
+    ["acceptable", "acceptable", "tolerable",    "tolerable"],    # V1
+    ["acceptable", "tolerable",  "tolerable",    "unacceptable"], # V2
+    ["tolerable",  "tolerable",  "unacceptable", "unacceptable"], # V3
+    ["tolerable",  "unacceptable", "unacceptable", "unacceptable"], # V4
+]
+
+# ── Appétence et acceptation ─────────────────────────────────
+[acceptance]
+appetite = "acceptable"
+
+[[acceptance.authorities]]
+level = "tolerable"
+by = { fr = "Responsable du risque, après avis du RSSI", en = "Risk owner, after the CISO's opinion" }
+max_months = 12
+
+[[acceptance.authorities]]
+level = "unacceptable"
+by = { fr = "Direction générale (homologation)", en = "Executive management (security accreditation)" }
+max_months = 6
