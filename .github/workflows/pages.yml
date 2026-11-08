@@ -85,7 +85,7 @@ jobs:
 
             - name: Empaqueter le site
               if: ${{ !github.event.repository.private }}
-              uses: actions/upload-pages-artifact@v4
+              uses: actions/upload-pages-artifact@v5
               with:
                   path: _site
 
