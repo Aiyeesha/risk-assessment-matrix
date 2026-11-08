@@ -6,7 +6,7 @@ Un **registre de risques méthodique** pour une PME ou une ETI : identifier, ana
 traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifiable. Aligné sur
 **ISO/IEC 27005:2022** et sur **EBIOS Risk Manager** (ANSSI, version 1.5 de mars 2024).
 
-> 🚧 **En cours de construction** (v0.1.0). La méthode est en place ; le registre arrive à l'étape 3.
+> 🚧 **En cours de construction** (v0.1.0). La méthode et le registre sont en place ; les références arrivent à l'étape 4.
 
 ## Ce que contiendra le dépôt
 
@@ -25,7 +25,7 @@ traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifi
 |---|---|---|
 | 1 | Dépôt, structure, vérification de la syntaxe TOML, CI | ✅ |
 | 2 | Méthode : format TOML, préréglages 5×5 et EBIOS RM 4×4 | ✅ |
-| 3 | Registre : modèle, règles de cohérence, `risk-check` | ⏳ |
+| 3 | Registre : modèle, règles de cohérence, `risk-check` | ✅ |
 | 4 | Références (ISO/IEC 27001, ATT&CK, playbooks), import et export CSV sûrs | ⏳ |
 | 5 | Rapports Markdown et HTML : `risk-report` | ⏳ |
 | 6 | Guide d'évaluation et registres d'exemple FR/EN → **v1.0.0** | ⏳ |
@@ -82,6 +82,69 @@ vraisemblance V1 à V4) et grille d'acceptation à trois zones. Appétence : *Ac
 > descriptions, grille et autorités à votre organisation, puis faites valider le résultat par la
 > direction : la méthode fait partie des critères de risque exigés par ISO/IEC 27001 (6.1.2).
 
+## Le registre
+
+Un registre (`kind = "register"`) désigne sa méthode par son identifiant, puis décrit chaque risque.
+Exemple abrégé (un registre complet figure dans [`tests/data/`](tests/data/registre-valide.toml)) :
+
+```toml
+kind = "register"
+format = 1
+method = "iso27005-5x5"         # échelles, grille et autorités viennent de la méthode
+lang = "fr"                     # langue des textes, et donc des rôles d'acceptation attendus
+organisation = "Atelier Lumen"
+assessed_on = 2026-09-01        # dates TOML, sans guillemets
+assessor = "Équipe sécurité"
+
+[[risks]]
+id = "R02"
+title = "Hameçonnage ciblant la comptabilité"
+owner = "Directrice administrative et financière"
+assets = ["Messagerie", "Virements"]
+threat = "Fraudeur se faisant passer pour un fournisseur"
+vulnerability = "Changement de RIB sans contre-appel"
+gdpr = false                    # données personnelles concernées ?
+nis2 = false                    # incident à notifier au titre de NIS 2 ?
+inherent = { likelihood = 4, impact = 3 }   # avant les mesures prévues
+residual = { likelihood = 2, impact = 3 }   # après
+treatment = "reduce"            # reduce, accept, transfer ou avoid
+review = { last = 2026-09-15, next = 2027-03-15 }
+acceptance = { by = "Claire Martin", role = "Responsable du risque", on = 2026-09-15, until = 2027-09-15, rationale = "…" }
+
+[[risks.measures]]
+title = "Contre-appel obligatoire avant tout changement de RIB"
+owner = "Directrice administrative et financière"
+due = 2026-09-10
+status = "done"                 # planned, in-progress ou done
+```
+
+Champs facultatifs : `description`, `category`, `existing_controls`, `status` (`active` par défaut,
+`closed` pour un risque disparu), `transfer = { to = "…" }`, `residual.justification`, et
+`[[risks.history]]` (`on`, `by`, `change`).
+
+`risk-check` distingue deux sortes de messages.
+
+**Erreurs** — le registre est invalide ou incohérent (code de retour `1`) :
+- méthode introuvable, note hors des échelles de la méthode, clé inconnue, date mal écrite ;
+- risque résiduel supérieur au risque inhérent sans `justification` ;
+- `reduce` sans mesure, `transfer` sans destinataire ;
+- **acceptation formelle manquante** quand le risque résiduel reste au-dessus de l'appétence et que
+  plus rien n'est en cours pour le réduire (traitement `accept`, ou toutes les mesures terminées) —
+  c'est l'acceptation des risques résiduels par leurs propriétaires d'ISO/IEC 27001 (6.1.3 f) ;
+- acceptation signée par une autre autorité que celle prévue par la méthode, ou plus longue que la
+  durée maximale autorisée ;
+- prochaine revue plus éloignée que la fréquence du niveau de risque résiduel ;
+- historique hors de l'ordre chronologique, dates futures.
+
+**Avertissements** — le fichier est valide, mais une échéance est passée (code `0`, ou `1` avec
+`--strict`) : mesure en retard, revue en retard, acceptation expirée. La date de référence est celle
+du jour, ou celle donnée par `--today`.
+
+```text
+registre.prive.toml: attention : R01.review : revue en retard (prévue le 2027-01-01)
+1 fichier(s) vérifié(s) — OK, 1 avertissement(s)
+```
+
 ## Utilisation
 
 ```powershell
@@ -90,11 +153,13 @@ python -m venv .venv
 pip install -e ".[dev]"
 risk-check              # vérifie methods/ et examples/
 risk-check mon-registre.prive.toml
+risk-check --strict --today 2027-01-15   # avertissements bloquants, à une date donnée
 pytest -v
 ```
 
 Les erreurs s'affichent au format `fichier:ligne: message`, reconnu par les éditeurs et la CI.
-Code de retour : `0` si tout est valide, `1` en cas de problème, `2` en cas de mauvais usage.
+Code de retour : `0` si tout est valide, `1` en cas d'erreur (ou d'avertissement avec `--strict`),
+`2` en cas de mauvais usage. Les méthodes sont lues dans `methods/` (option `--methods` pour un autre dossier).
 
 > 🔒 **Un vrai registre ne se publie pas.** Il décrit les faiblesses de l'organisation. Nommez-le
 > `*.prive.toml` ou rangez-le dans `registres-prives/` : ces fichiers sont exclus de Git.

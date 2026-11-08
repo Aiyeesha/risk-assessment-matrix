@@ -25,3 +25,12 @@ française, renommée `archive-matrice-risques`).
   chaque fichier doit déclarer son type (`kind`), et deux méthodes ne peuvent pas partager un `id`.
 - Préréglages `iso27005-5x5` (vraisemblance × impact, règle du produit) et `ebios-rm-4x4` (échelles
   d'EBIOS Risk Manager 1.5, grille d'acceptation à trois zones donnée en exemple).
+- **Registre de risques** (`kind = "register"`, module `register.py`) : identification (actifs,
+  menace, vulnérabilité, RGPD, NIS 2), risque inhérent et résiduel, mesures prévues (responsable,
+  échéance, état), traitement (réduire, accepter, transférer, éviter), acceptation formelle, revue et
+  historique. `risk-check` vérifie chaque registre avec la méthode qu'il désigne : notes dans les
+  échelles, résiduel justifié s'il dépasse l'inhérent, acceptation exigée au-dessus de l'appétence
+  (autorité et durée maximale prévues par la méthode), fréquence de revue, historique chronologique.
+- **Avertissements** distincts des erreurs pour ce qui est échu (mesure ou revue en retard,
+  acceptation expirée) ; options `--today` (date de référence), `--strict` (les avertissements font
+  échouer) et `--methods` (dossier des méthodes, `methods/` par défaut).
