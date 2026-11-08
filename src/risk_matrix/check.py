@@ -1,10 +1,10 @@
 """
 Vérification des méthodes d'évaluation et des registres de risques (commande « risk-check »).
 
-Étape 1 : chaque fichier TOML est lu et sa SYNTAXE vérifiée, avec un message précis
-« fichier:ligne: message », reconnu par les éditeurs et par la CI.
-Les étapes suivantes ajoutent les contrôles de contenu : la méthode (échelles, seuils,
-acceptation), puis le registre (scores, traitement, acceptation, revues, références).
+Chaque fichier TOML est lu et sa SYNTAXE vérifiée (message « fichier:ligne: message »,
+reconnu par les éditeurs et par la CI), puis son CONTENU selon son type :
+  - kind = "method"   : méthode d'évaluation (échelles, niveaux, grille, acceptation) ;
+  - kind = "register" : registre de risques (contrôles de contenu ajoutés à l'étape 3).
 
 Codes de retour : 0 = tout est valide, 1 = au moins un problème, 2 = mauvais usage.
 """
@@ -21,6 +21,7 @@ from pathlib import Path
 
 from risk_matrix import __version__
 from risk_matrix.console import setup_streams
+from risk_matrix.method import Method, parse_method
 
 # ─────────────────────────────────────────────────────────────
 # 1. Réglages
@@ -32,6 +33,8 @@ DEFAULT_FOLDERS = ("methods", "examples")
 MAX_BYTES = 1_048_576
 # Dossiers jamais parcourus (environnements, caches, dépendances)
 SKIP_DIRS = {".git", ".venv", "node_modules", "build", "dist", ".pytest_cache", ".ruff_cache", "__pycache__"}
+# Types de fichiers reconnus (clé « kind » en tête de fichier)
+KINDS = ("method", "register")
 # Python 3.11 à 3.13 indiquent la position dans le message : « … (at line 3, column 7) »
 _POSITION = re.compile(r"\(at line (?P<line>\d+), column \d+\)")
 
@@ -99,13 +102,33 @@ def iter_toml(targets: Iterable[Path]) -> list[Path]:
     return found
 
 
+def check_file(path: Path) -> tuple[Method | None, list[Problem]]:
+    """Syntaxe, puis contenu selon le type ; renvoie la méthode lue s'il s'agit d'une méthode valide."""
+    data, problems = load_toml(path)
+    if data is None:
+        return None, problems
+    kind = data.get("kind")
+    if kind not in KINDS:
+        return None, [Problem(path, f"kind : « {' » ou « '.join(KINDS)} » attendu en tête de fichier")]
+    if kind == "method":
+        method, errors = parse_method(data)
+        return method, [Problem(path, message) for message in errors]
+    return None, []  # registre : contrôles de contenu à l'étape 3
+
+
 def run_checks(paths: Iterable[Path]) -> tuple[int, list[Problem]]:
     """Vérifie chaque fichier ; renvoie (nombre de fichiers lus, problèmes)."""
     files = iter_toml(paths)
     problems: list[Problem] = []
+    seen: dict[str, Path] = {}
     for path in files:
-        _data, found = load_toml(path)
+        method, found = check_file(path)
         problems.extend(found)
+        # Deux méthodes ne peuvent pas porter le même identifiant : un registre ne saurait laquelle utiliser
+        if method is not None:
+            if method.id in seen:
+                problems.append(Problem(path, f"id : « {method.id} » déjà utilisé par {seen[method.id].name}"))
+            seen.setdefault(method.id, path)
     return len(files), problems
 
 

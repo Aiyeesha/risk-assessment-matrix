@@ -6,8 +6,7 @@ Un **registre de risques méthodique** pour une PME ou une ETI : identifier, ana
 traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifiable. Aligné sur
 **ISO/IEC 27005:2022** et sur **EBIOS Risk Manager** (ANSSI, version 1.5 de mars 2024).
 
-> 🚧 **En cours de construction** (v0.1.0 — ossature). La méthode arrive à l'étape 2, le registre
-> à l'étape 3.
+> 🚧 **En cours de construction** (v0.1.0). La méthode est en place ; le registre arrive à l'étape 3.
 
 ## Ce que contiendra le dépôt
 
@@ -25,7 +24,7 @@ traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifi
 | Étape | Contenu | État |
 |---|---|---|
 | 1 | Dépôt, structure, vérification de la syntaxe TOML, CI | ✅ |
-| 2 | Méthode : format TOML, préréglages 5×5 et EBIOS RM 4×4 | ⏳ |
+| 2 | Méthode : format TOML, préréglages 5×5 et EBIOS RM 4×4 | ✅ |
 | 3 | Registre : modèle, règles de cohérence, `risk-check` | ⏳ |
 | 4 | Références (ISO/IEC 27001, ATT&CK, playbooks), import et export CSV sûrs | ⏳ |
 | 5 | Rapports Markdown et HTML : `risk-report` | ⏳ |
@@ -33,13 +32,63 @@ traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifi
 | 7 | Interface web sur GitHub Pages → **v1.1.0** | ⏳ |
 | 8 | Dépôt public et protections | ⏳ |
 
-## Utilisation (étape 1)
+## La méthode
+
+Une méthode est un fichier TOML (`kind = "method"`) qui décrit, **en français et en anglais** :
+
+- les deux **axes** : la vraisemblance et l'impact (la « gravité » dans EBIOS RM), de 3 à 7 niveaux
+  chacun, numérotés à partir de 1 ;
+- les **niveaux de risque**, du moins grave au plus grave, avec leur couleur, leur fréquence de revue
+  et ce que l'organisation en fait ;
+- la **grille** `[grid]` : le niveau de chaque case, écrit explicitement. Une formule
+  « vraisemblance × impact » ne permettrait pas de représenter les zones d'EBIOS RM ;
+- l'**appétence** au risque et les **autorités d'acceptation** : qui peut accepter un risque
+  au-dessus de l'appétence, et pour combien de mois au plus.
+
+`risk-check` refuse une méthode incohérente et désigne le champ fautif par son chemin
+(`grid.rows[4][2] : …`) :
+
+- clés inconnues (une faute de frappe ne passe jamais en silence), textes manquants dans une langue ;
+- grille incomplète, niveau inconnu ou jamais utilisé ;
+- grille **non monotone** : un risque ne peut pas devenir moins grave quand sa vraisemblance ou son
+  impact augmente ;
+- un risque plus grave revu moins souvent, ou accepté plus longtemps, qu'un risque moins grave ;
+- une autorité d'acceptation manquante (ou inutile) au regard de l'appétence.
+
+### Préréglages
+
+**[`iso27005-5x5`](methods/iso27005-5x5.toml)** — compatible avec la démarche d'ISO/IEC 27005:2022, qui
+laisse chaque organisation définir ses échelles. Appétence : *Faible*.
+
+| Vraisemblance ↓ / Impact → | Négligeable | Mineur | Modéré | Majeur | Critique |
+|---|---|---|---|---|---|
+| Quasi certain | Modéré | Élevé | Élevé | Critique | Critique |
+| Probable | Faible | Modéré | Élevé | Élevé | Critique |
+| Possible | Faible | Modéré | Modéré | Élevé | Élevé |
+| Peu probable | Faible | Faible | Modéré | Modéré | Élevé |
+| Rare | Faible | Faible | Faible | Faible | Modéré |
+
+**[`ebios-rm-4x4`](methods/ebios-rm-4x4.toml)** — échelles d'EBIOS Risk Manager (gravité G1 à G4,
+vraisemblance V1 à V4) et grille d'acceptation à trois zones. Appétence : *Acceptable en l'état*.
+
+| Vraisemblance ↓ / Gravité → | G1 — Mineure | G2 — Significative | G3 — Grave | G4 — Critique |
+|---|---|---|---|---|
+| V4 — Quasi certain | Tolérable sous contrôle | Inacceptable | Inacceptable | Inacceptable |
+| V3 — Très vraisemblable | Tolérable sous contrôle | Tolérable sous contrôle | Inacceptable | Inacceptable |
+| V2 — Vraisemblable | Acceptable en l'état | Tolérable sous contrôle | Tolérable sous contrôle | Inacceptable |
+| V1 — Peu vraisemblable | Acceptable en l'état | Acceptable en l'état | Tolérable sous contrôle | Tolérable sous contrôle |
+
+> ⚙️ **À adapter.** Les deux préréglages sont des points de départ réalistes. Copiez-en un, ajustez
+> descriptions, grille et autorités à votre organisation, puis faites valider le résultat par la
+> direction : la méthode fait partie des critères de risque exigés par ISO/IEC 27001 (6.1.2).
+
+## Utilisation
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -e ".[dev]"
-risk-check              # vérifie methods/ et examples/ (syntaxe TOML pour l'instant)
+risk-check              # vérifie methods/ et examples/
 risk-check mon-registre.prive.toml
 pytest -v
 ```
