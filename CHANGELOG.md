@@ -9,6 +9,12 @@ française, renommée `archive-matrice-risques`).
 
 ## [Non publié]
 
+### Modifié
+- Dépôt rendu public : règles de protection de `main` (Pull Request obligatoire, 7 vérifications
+  requises, ni suppression ni réécriture de l'historique), analyse des secrets et protection à
+  l'envoi, alertes et correctifs Dependabot, signalement privé des vulnérabilités ; interface web
+  publiée sur GitHub Pages.
+
 ## [1.1.0] — 2026-11-08
 
 ### Ajouté
