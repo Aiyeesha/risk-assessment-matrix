@@ -1,14 +1,27 @@
 # Matrice d'évaluation des risques
 
+[![Vérifications](https://github.com/Aiyeesha/risk-assessment-matrix/actions/workflows/checks.yml/badge.svg)](https://github.com/Aiyeesha/risk-assessment-matrix/actions/workflows/checks.yml)
+![Python](https://img.shields.io/badge/python-3.11%20%7C%203.14-blue)
+![Dépendances](https://img.shields.io/badge/d%C3%A9pendances-aucune-brightgreen)
+![ISO/IEC 27005](https://img.shields.io/badge/ISO%2FIEC-27005%3A2022-blue)
+![EBIOS RM](https://img.shields.io/badge/EBIOS%20RM-1.5-blue)
+![Licence](https://img.shields.io/badge/licence-MIT-green)
+
 🇬🇧 [English version](README.md)
 
 Un **registre de risques méthodique** pour une PME ou une ETI : identifier, analyser, évaluer,
 traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifiable. Aligné sur
 **ISO/IEC 27005:2022** et sur **EBIOS Risk Manager** (ANSSI, version 1.5 de mars 2024).
 
-> 🚧 **En cours de construction** (v0.1.0). Méthode, registre, références, import/export et rapports sont en place ; le guide et les exemples arrivent à l'étape 6.
+> ✅ **Version 1.0.0** : l'outillage en ligne de commande est complet (vérification, import, export,
+> rapports), avec un guide d'évaluation et des registres d'exemple. L'interface web arrive en v1.1.0.
 
-## Ce que contiendra le dépôt
+![Rapport HTML du registre d'exemple d'Atelier Lumen : synthèse et cartographies du risque inhérent et résiduel](assets/report-fr.png)
+
+*Rapport HTML généré par `risk-report` à partir du [registre d'exemple](examples/fr/atelier-lumen.toml)
+d'Atelier Lumen, entreprise fictive : l'effet des mesures se lit d'une cartographie à l'autre.*
+
+## Contenu du dépôt
 
 | Élément | Contenu |
 |---|---|
@@ -19,6 +32,22 @@ traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifi
 | **Liens** | Actifs, menaces et vulnérabilités, mesures de l'annexe A d'ISO/IEC 27001:2022, techniques MITRE ATT&CK, et playbook de [réponse aux incidents](https://github.com/Aiyeesha/incident-response-playbook) à appliquer si le risque se réalise. |
 | **Outils** | `risk-check` (vérification), `risk-report` (rapports Markdown et HTML), `risk-export` et `risk-import` (JSON, CSV protégé contre l'injection de formules), interface web. |
 
+## Guide et exemples
+
+- 📘 **[Guide d'évaluation](docs/fr/guide-evaluation.md)** : la démarche complète, de la préparation
+  à la revue, avec les bonnes pratiques et les correspondances ISO/IEC 27001, ISO/IEC 27005 et
+  EBIOS RM.
+- 🏢 **Registres d'exemple** d'Atelier Lumen, l'entreprise fictive de l'[exercice sur table](https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/docs/D06-exercice-sur-table.md)
+  du dépôt de réponse aux incidents :
+
+| Registre | Méthode | Contenu | Sorties générées |
+|---|---|---|---|
+| [`atelier-lumen.toml`](examples/fr/atelier-lumen.toml) | 5×5 | 8 risques : rançongiciel, fraude au virement, fuite de données, comptes Microsoft 365, indisponibilité, vol de portable, accès non révoqués, risque clos | [Markdown](examples/fr/atelier-lumen.md) · [HTML](examples/fr/atelier-lumen.html) · [JSON](examples/fr/atelier-lumen.json) |
+| [`atelier-lumen-ebios.toml`](examples/fr/atelier-lumen-ebios.toml) | EBIOS RM 4×4 | 4 scénarios stratégiques, dont un risque inacceptable accepté par homologation | [Markdown](examples/fr/atelier-lumen-ebios.md) · [HTML](examples/fr/atelier-lumen-ebios.html) · [JSON](examples/fr/atelier-lumen-ebios.json) |
+
+Les sorties sont générées à une date fixe par `python scripts/build_examples.py` ; la CI vérifie
+qu'elles restent à jour.
+
 ## Feuille de route
 
 | Étape | Contenu | État |
@@ -28,7 +57,7 @@ traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifi
 | 3 | Registre : modèle, règles de cohérence, `risk-check` | ✅ |
 | 4 | Références (ISO/IEC 27001, ATT&CK, playbooks), import et export CSV sûrs | ✅ |
 | 5 | Rapports Markdown et HTML : `risk-report` | ✅ |
-| 6 | Guide d'évaluation et registres d'exemple FR/EN → **v1.0.0** | ⏳ |
+| 6 | Guide d'évaluation et registres d'exemple FR/EN → **v1.0.0** | ✅ |
 | 7 | Interface web sur GitHub Pages → **v1.1.0** | ⏳ |
 | 8 | Dépôt public et protections | ⏳ |
 

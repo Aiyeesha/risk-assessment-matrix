@@ -1,0 +1,282 @@
+# ─────────────────────────────────────────────────────────────
+# Registre d'exemple — Atelier Lumen (ENTREPRISE FICTIVE)
+#
+# Atelier Lumen conçoit et vend des luminaires : 180 salariés, un siège, un entrepôt et une
+# boutique en ligne (fabrication sous-traitée). Système d'information : annuaire Active Directory,
+# Microsoft 365, serveur de fichiers, sauvegardes sur un NAS du réseau interne et copie
+# hebdomadaire sur bande, accès distant par VPN pour 40 salariés.
+# C'est l'entreprise de l'exercice sur table du dépôt incident-response-playbook (document D06) :
+# ce registre reprend les faiblesses que l'exercice a mises au jour.
+#
+# Méthode : iso27005-5x5. Appétence : « Faible ». Les noms de personnes sont inventés.
+# ─────────────────────────────────────────────────────────────
+kind = "register"
+format = 1
+method = "iso27005-5x5"
+lang = "fr"
+organisation = "Atelier Lumen (entreprise fictive)"
+assessed_on = 2026-09-15
+assessor = "Comité des risques (RSSI, DSI, DAF, DPO)"
+
+# ── R01 : le scénario de l'exercice sur table ───────────────
+[[risks]]
+id = "R01"
+title = "Rançongiciel chiffrant le serveur de fichiers et les sauvegardes"
+description = "Un attaquant entre par le VPN avec un mot de passe volé, se déplace jusqu'au serveur de fichiers, puis chiffre les partages et les sauvegardes du NAS, joignable depuis le même réseau."
+category = "Cybersécurité"
+owner = "Julien Morel, DSI"
+assets = ["Serveur de fichiers", "NAS de sauvegarde", "Annuaire Active Directory"]
+threat = "Groupe criminel diffusant un rançongiciel, avec double extorsion"
+vulnerability = "VPN sans authentification multifacteur ; NAS de sauvegarde joignable depuis le réseau bureautique"
+gdpr = true
+nis2 = false
+inherent = { likelihood = 4, impact = 5 }
+existing_controls = ["Antivirus sur les postes et serveurs", "Copie hebdomadaire sur bande, stockée au coffre"]
+residual = { likelihood = 3, impact = 4 }
+treatment = "reduce"
+review = { last = 2026-10-15, next = 2027-01-15 }
+iso27001 = ["5.17", "8.7", "8.13", "8.22"]
+attack = ["T1133", "T1078", "T1486", "T1490"]
+playbooks = ["P02", "P01"]
+
+[[risks.measures]]
+title = "Authentification multifacteur sur le VPN"
+owner = "Julien Morel, DSI"
+due = 2026-10-15
+status = "done"
+iso27001 = ["8.5"]
+
+[[risks.measures]]
+title = "Sauvegardes immuables, copie quotidienne hors ligne"
+owner = "Julien Morel, DSI"
+due = 2026-10-31
+status = "done"
+iso27001 = ["8.13"]
+
+[[risks.measures]]
+title = "EDR sur tous les postes et serveurs, supervisé 24 h/24"
+owner = "Prestataire d'infogérance"
+due = 2026-12-15
+status = "in-progress"
+iso27001 = ["8.7", "8.16"]
+
+[[risks.measures]]
+title = "Isoler le NAS de sauvegarde dans un réseau dédié"
+owner = "Julien Morel, DSI"
+due = 2027-01-31
+status = "planned"
+iso27001 = ["8.22"]
+
+[[risks.history]]
+on = 2026-09-15
+by = "Comité des risques"
+change = "Création du risque après l'exercice sur table : NAS joignable et VPN sans MFA."
+
+[[risks.history]]
+on = 2026-10-15
+by = "Julien Morel"
+change = "MFA en service sur le VPN ; vraisemblance résiduelle ramenée de 4 à 3."
+
+# ── R02 ─────────────────────────────────────────────────────
+[[risks]]
+id = "R02"
+title = "Fraude au virement par usurpation d'un fournisseur"
+description = "Un fraudeur se fait passer pour un fournisseur et obtient le changement de ses coordonnées bancaires ; les paiements suivants partent vers son compte."
+category = "Fraude"
+owner = "Nadia Ferrand, DAF"
+assets = ["Processus de paiement des fournisseurs", "Messagerie de la comptabilité"]
+threat = "Fraudeur pratiquant la fraude aux faux fournisseurs"
+vulnerability = "Changement de coordonnées bancaires accepté sur simple courriel"
+gdpr = false
+nis2 = false
+inherent = { likelihood = 4, impact = 4 }
+existing_controls = ["Double signature des virements de plus de 10 000 €"]
+residual = { likelihood = 2, impact = 4 }
+treatment = "reduce"
+review = { last = 2026-09-15, next = 2027-03-15 }
+acceptance = { by = "Nadia Ferrand", role = "Responsable du risque", on = 2026-10-01, until = 2027-10-01, rationale = "Le contre-appel systématique et la formation ramènent la vraisemblance à 2 ; l'impact reste majeur, mais un contrôle supplémentaire n'est pas proportionné aujourd'hui." }
+iso27001 = ["5.14", "6.3"]
+attack = ["T1566", "T1656"]
+playbooks = ["P07", "P04"]
+
+[[risks.measures]]
+title = "Contre-appel obligatoire, sur un numéro déjà connu, avant tout changement de coordonnées bancaires"
+owner = "Nadia Ferrand, DAF"
+due = 2026-09-30
+status = "done"
+iso27001 = ["5.14"]
+
+[[risks.measures]]
+title = "Formation de la comptabilité aux fraudes au virement"
+owner = "Responsable des ressources humaines"
+due = 2026-09-30
+status = "done"
+iso27001 = ["6.3"]
+
+# ── R03 ─────────────────────────────────────────────────────
+[[risks]]
+id = "R03"
+title = "Fuite des données clients de la boutique en ligne"
+description = "Une faille de l'application de la boutique permet d'extraire les comptes clients (identité, adresses, historique de commandes)."
+category = "Protection des données"
+owner = "Camille Roy, responsable du commerce en ligne"
+assets = ["Boutique en ligne", "Base de données clients"]
+threat = "Attaquant exploitant les applications web exposées"
+vulnerability = "Extensions de la boutique rarement mises à jour ; pas de test d'intrusion depuis deux ans"
+gdpr = true
+nis2 = false
+inherent = { likelihood = 3, impact = 4 }
+existing_controls = ["Hébergement chez un prestataire certifié", "Paiement délégué à un prestataire de paiement"]
+residual = { likelihood = 2, impact = 4 }
+treatment = "reduce"
+review = { last = 2026-09-15, next = 2027-03-15 }
+iso27001 = ["8.8", "8.26", "8.28"]
+attack = ["T1190"]
+playbooks = ["P03"]
+
+[[risks.measures]]
+title = "Pare-feu applicatif (WAF) devant la boutique"
+owner = "Camille Roy"
+due = 2026-10-15
+status = "done"
+iso27001 = ["8.20"]
+
+[[risks.measures]]
+title = "Test d'intrusion de la boutique et correction des failles trouvées"
+owner = "Camille Roy"
+due = 2026-10-31
+status = "in-progress"
+iso27001 = ["8.8", "8.29"]
+
+# ── R04 ─────────────────────────────────────────────────────
+[[risks]]
+id = "R04"
+title = "Compromission de comptes Microsoft 365 par hameçonnage"
+description = "Un salarié saisit son mot de passe sur une fausse page de connexion ; l'attaquant lit sa messagerie et s'en sert pour hameçonner clients et collègues."
+category = "Cybersécurité"
+owner = "Julien Morel, DSI"
+assets = ["Microsoft 365 (messagerie, OneDrive, Teams)"]
+threat = "Campagnes d'hameçonnage visant les identifiants"
+vulnerability = "Authentification multifacteur non imposée à tous les comptes"
+gdpr = true
+nis2 = false
+inherent = { likelihood = 4, impact = 3 }
+existing_controls = ["Filtrage antispam de Microsoft 365"]
+residual = { likelihood = 2, impact = 3 }
+treatment = "reduce"
+review = { last = 2026-10-01, next = 2027-04-01 }
+acceptance = { by = "Julien Morel", role = "Responsable du risque", on = 2026-10-01, until = 2027-10-01, rationale = "MFA imposée et accès conditionnel en place ; le risque résiduel tient à l'hameçonnage de session, suivi par la supervision." }
+iso27001 = ["5.17", "8.5"]
+attack = ["T1566.002", "T1078.004"]
+playbooks = ["P07", "P04"]
+
+[[risks.measures]]
+title = "MFA imposée à tous les comptes, sans exception"
+owner = "Julien Morel, DSI"
+due = 2026-09-30
+status = "done"
+iso27001 = ["8.5"]
+
+[[risks.measures]]
+title = "Accès conditionnel : connexions autorisées depuis les appareils gérés seulement"
+owner = "Julien Morel, DSI"
+due = 2026-09-30
+status = "done"
+iso27001 = ["5.15"]
+
+# ── R05 ─────────────────────────────────────────────────────
+[[risks]]
+id = "R05"
+title = "Indisponibilité prolongée de la boutique en ligne"
+description = "Panne de l'hébergeur ou attaque par déni de service pendant une période commerciale forte (soldes, fin d'année)."
+category = "Continuité d'activité"
+owner = "Camille Roy, responsable du commerce en ligne"
+assets = ["Boutique en ligne"]
+threat = "Panne d'un prestataire ; attaque par déni de service"
+vulnerability = "Hébergeur unique, sans site de secours"
+gdpr = false
+nis2 = false
+inherent = { likelihood = 3, impact = 3 }
+residual = { likelihood = 3, impact = 2 }
+treatment = "transfer"
+transfer = { to = "Hébergeur (engagement de disponibilité avec pénalités) et assureur cyber (perte d'exploitation)" }
+review = { last = 2026-09-15, next = 2027-03-15 }
+acceptance = { by = "Camille Roy", role = "Responsable du risque", on = 2026-09-15, until = 2027-09-15, rationale = "Les pertes financières sont couvertes par le contrat et l'assurance ; un site de secours coûterait plus que le risque restant." }
+iso27001 = ["5.20", "5.23", "5.30"]
+attack = ["T1498"]
+playbooks = ["P06"]
+
+# ── R06 ─────────────────────────────────────────────────────
+[[risks]]
+id = "R06"
+title = "Vol ou perte d'un ordinateur portable"
+description = "Un commercial se fait voler son portable en déplacement ; les fichiers clients qu'il contient sont exposés."
+category = "Matériel"
+owner = "Julien Morel, DSI"
+assets = ["Ordinateurs portables des commerciaux"]
+threat = "Vol opportuniste"
+vulnerability = "Usage nomade fréquent"
+gdpr = true
+nis2 = false
+inherent = { likelihood = 3, impact = 3 }
+residual = { likelihood = 3, impact = 1 }
+treatment = "reduce"
+review = { last = 2026-09-15, next = 2027-09-15 }
+iso27001 = ["7.9", "8.1", "8.24"]
+
+[[risks.measures]]
+title = "Chiffrement intégral des disques (BitLocker) et effacement à distance"
+owner = "Julien Morel, DSI"
+due = 2026-09-15
+status = "done"
+iso27001 = ["8.24"]
+
+# ── R07 ─────────────────────────────────────────────────────
+[[risks]]
+id = "R07"
+title = "Accès conservés après un départ ou la fin d'un contrat de prestation"
+description = "Un ancien salarié ou un ancien prestataire garde un compte actif, parfois à privilèges, et s'en sert ou se le fait voler."
+category = "Gestion des accès"
+owner = "Responsable des ressources humaines"
+assets = ["Annuaire Active Directory", "Microsoft 365", "VPN"]
+threat = "Ancien salarié ou prestataire malveillant ; vol d'un compte dormant"
+vulnerability = "Pas de procédure de départ commune aux ressources humaines et à l'informatique"
+gdpr = false
+nis2 = false
+inherent = { likelihood = 2, impact = 4 }
+residual = { likelihood = 1, impact = 4 }
+treatment = "reduce"
+review = { last = 2026-09-15, next = 2027-09-15 }
+iso27001 = ["5.18", "6.5", "8.2"]
+attack = ["T1078"]
+playbooks = ["P05"]
+
+[[risks.measures]]
+title = "Procédure de départ commune RH / informatique et revue trimestrielle des comptes"
+owner = "Responsable des ressources humaines"
+due = 2027-03-31
+status = "planned"
+iso27001 = ["5.18", "6.5"]
+
+# ── R08 : risque clos ───────────────────────────────────────
+[[risks]]
+id = "R08"
+title = "Sinistre dans la salle serveur de l'entrepôt"
+description = "Un dégât des eaux ou un incendie détruit les serveurs de l'ancienne application logistique, hébergée à l'entrepôt."
+category = "Sécurité physique"
+owner = "Julien Morel, DSI"
+status = "closed"
+assets = ["Ancienne application logistique"]
+threat = "Dégât des eaux, incendie"
+vulnerability = "Local technique sans détection d'incendie, sous une toiture fragile"
+gdpr = false
+nis2 = false
+inherent = { likelihood = 2, impact = 4 }
+residual = { likelihood = 1, impact = 1 }
+treatment = "avoid"
+review = { last = 2026-06-30, next = 2027-06-30 }
+
+[[risks.history]]
+on = 2026-06-30
+by = "Julien Morel"
+change = "Application logistique migrée chez un éditeur en mode SaaS ; serveurs de l'entrepôt retirés. Risque clos."

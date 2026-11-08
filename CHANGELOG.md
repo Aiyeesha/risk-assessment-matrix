@@ -9,7 +9,21 @@ française, renommée `archive-matrice-risques`).
 
 ## [Non publié]
 
+## [1.0.0] — 2026-11-08
+
+Première version complète de l'outillage en ligne de commande.
+
 ### Ajouté
+- **Guide d'évaluation** en français ([`docs/fr/guide-evaluation.md`](docs/fr/guide-evaluation.md))
+  et en anglais ([`docs/en/assessment-guide.md`](docs/en/assessment-guide.md)) : préparation,
+  identification, analyse, évaluation, traitement, acceptation formelle, suivi et revue, compte rendu,
+  erreurs fréquentes, correspondances ISO/IEC 27001:2022, ISO/IEC 27005:2022 et EBIOS RM.
+- **Registres d'exemple** d'Atelier Lumen (entreprise fictive), en français et en anglais : 8 risques
+  avec la méthode 5×5, 4 scénarios stratégiques avec EBIOS RM 4×4 ; versions françaises et anglaises
+  vérifiées comme strictement parallèles par les tests.
+- **Sorties d'exemple** (rapports Markdown et HTML, export JSON) générées à date fixe par
+  `scripts/build_examples.py` ; la CI vérifie qu'elles restent à jour.
+- Captures du rapport HTML (clair en français, sombre en anglais) dans les README.
 - Ossature du projet : paquet Python `risk_matrix` sans dépendance d'exécution, commande `risk-check`
   qui vérifie la syntaxe des fichiers TOML de `methods/` et `examples/` (ou des chemins donnés) et
   affiche les erreurs au format `fichier:ligne: message`.
