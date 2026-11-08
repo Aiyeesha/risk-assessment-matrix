@@ -46,7 +46,13 @@ française, renommée `archive-matrice-risques`).
 - Sécurité des CSV : protection contre l'injection de formules (CWE-1236) à l'export, apostrophe de
   protection retirée à l'import ; fichiers limités à 1 Mio et 5 000 lignes, UTF-8 exigé ; aucun
   fichier existant écrasé sans `--force`.
+- **`risk-report`** : rapport Markdown ou HTML dans la langue du registre — synthèse, cartographies
+  du risque inhérent et résiduel, risques par niveau, risques au-dessus de l'appétence et leurs
+  acceptations, plan d'action, calendrier des revues, références (annexe A, playbooks, ATT&CK),
+  risques clos et avertissements. HTML autonome et imprimable, sans script ni ressource externe,
+  texte échappé, CSP limitée à la feuille de style intégrée (empreinte SHA-256), mode sombre.
 
 ### Corrigé
 - `description` et `category` d'un risque sont bien facultatives, comme l'indique la documentation.
-
+- Orange du niveau « élevé » / « tolérable » assombri (`#b85300`) dans les deux préréglages : le
+  texte blanc y atteint le contraste WCAG AA (4,91:1 au lieu de 4,42:1).

@@ -6,7 +6,7 @@ A **methodical risk register** for small and mid-sized organisations: identify, 
 treat, accept and review every risk, following a written and verifiable method. Aligned with
 **ISO/IEC 27005:2022** and **EBIOS Risk Manager** (ANSSI, version 1.5 of March 2024).
 
-> 🚧 **Work in progress** (v0.1.0). Method, register, references and import/export are in place; reports land in step 5.
+> 🚧 **Work in progress** (v0.1.0). Method, register, references, import/export and reports are in place; the guide and examples land in step 6.
 
 ## What the repository will contain
 
@@ -27,7 +27,7 @@ treat, accept and review every risk, following a written and verifiable method. 
 | 2 | Method: TOML format, 5×5 and EBIOS RM 4×4 presets | ✅ |
 | 3 | Register: data model, consistency rules, `risk-check` | ✅ |
 | 4 | References (ISO/IEC 27001, ATT&CK, playbooks), safe CSV import and export | ✅ |
-| 5 | Markdown and HTML reports: `risk-report` | ⏳ |
+| 5 | Markdown and HTML reports: `risk-report` | ✅ |
 | 6 | Assessment guide and example registers FR/EN → **v1.0.0** | ⏳ |
 | 7 | Web interface on GitHub Pages → **v1.1.0** | ⏳ |
 | 8 | Public repository and protections | ⏳ |
@@ -194,6 +194,31 @@ risk-import risks.csv --measures measures.csv -o register.private.toml `
 > recommendation); on import, that apostrophe is removed and the value stays plain text in the TOML
 > file. Imported files are limited to 1 MiB and 5,000 rows, UTF-8 required (in Excel: *Save as →
 > CSV UTF-8*).
+
+## Reports
+
+```powershell
+risk-report register.private.toml                               # Markdown on standard output
+risk-report register.private.toml --format html -o reports/report.html
+```
+
+The report, in the register's language, covers:
+
+| Section | Content |
+|---|---|
+| **Summary** | Active and closed risks, risks above the appetite, open and overdue measures, warnings; number of risks per residual level. |
+| **Heat maps** | Two matrices, inherent then residual risk: each cell shows its level, its colour and the risks it holds — the effect of the measures reads from one matrix to the other. |
+| **Risks by level** | From the most to the least severe, with owner, treatment and next review. |
+| **Above the appetite** | For each: accepted (by whom, until when), acceptance expired, or reduction under way. |
+| **Action plan** | Open measures by due date, overdue ones highlighted. |
+| **Review schedule** | Upcoming reviews, overdue ones highlighted. |
+| **References** | Annex A controls cited, by theme; playbooks and ATT&CK techniques with the risks concerned (links). |
+
+The HTML report is **a single file**, printable (A4 landscape, colours kept) and readable in dark
+mode. It contains **no script and no external resource**: every text from the register is escaped,
+and its content security policy (CSP) only allows its own stylesheet, identified by its SHA-256
+hash. Level colours offer a contrast of at least 4.5:1 with the text (WCAG 2.2, level AA). The
+`reports/` folder is excluded from Git.
 
 ## Usage
 

@@ -91,7 +91,7 @@ guidance = { fr = "Traitement planifié dans l'année, ou acceptation par le res
 [[levels]]
 id = "high"
 label = { fr = "Élevé", en = "High" }
-color = "#c25a00"
+color = "#b85300"  # blanc sur orange : contraste 4,91:1 (WCAG AA)
 review_months = 3
 guidance = { fr = "Traitement prioritaire sous 3 mois ; acceptation par la direction seulement.", en = "Priority treatment within 3 months; acceptance by management only." }
 

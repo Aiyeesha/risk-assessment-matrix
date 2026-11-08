@@ -78,7 +78,7 @@ guidance = { fr = "Aucune mesure supplémentaire requise ; revu lors du cycle st
 [[levels]]
 id = "tolerable"
 label = { fr = "Tolérable sous contrôle", en = "Tolerable under control" }
-color = "#c25a00"
+color = "#b85300"  # blanc sur orange : contraste 4,91:1 (WCAG AA)
 review_months = 6
 guidance = { fr = "Mesures de réduction à planifier ; suivi au cycle opérationnel.", en = "Reduction measures to plan; tracked at the operational cycle." }
 
