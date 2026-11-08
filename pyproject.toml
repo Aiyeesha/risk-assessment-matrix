@@ -1,0 +1,79 @@
+# ─────────────────────────────────────────────────────────────
+# 1. Outil de construction du paquet
+# ─────────────────────────────────────────────────────────────
+[build-system]
+requires = ["setuptools>=84.2.1"]
+build-backend = "setuptools.build_meta"
+
+# ─────────────────────────────────────────────────────────────
+# 2. Description du projet
+# ─────────────────────────────────────────────────────────────
+[project]
+name = "risk-assessment-matrix"
+dynamic = ["version"]
+description = "Registre de risques méthodique (ISO/IEC 27005, EBIOS RM) : vérification, rapports et export"
+readme = "README.md"
+requires-python = ">=3.11"         # tomllib (lecture des fichiers TOML) fait partie de la bibliothèque standard
+license = "MIT"
+authors = [{ name = "Aïcha Imène Dahoumane" }]
+keywords = ["risk-management", "risk-register", "iso-27005", "ebios-rm", "grc", "cybersecurity"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: French",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Topic :: Security",
+    "Topic :: Office/Business",
+]
+
+# Aucune dépendance d'exécution : la bibliothèque standard suffit
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=9.2.0", "ruff>=0.17.3"]
+
+[project.urls]
+Repository = "https://github.com/Aiyeesha/risk-assessment-matrix"
+Issues = "https://github.com/Aiyeesha/risk-assessment-matrix/issues"
+Changelog = "https://github.com/Aiyeesha/risk-assessment-matrix/blob/main/CHANGELOG.md"
+
+# Commande installée : « risk-check » vérifie les méthodes et les registres
+[project.scripts]
+risk-check = "risk_matrix.check:main"
+
+# ─────────────────────────────────────────────────────────────
+# 3. Emplacement du code et version
+# ─────────────────────────────────────────────────────────────
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "risk_matrix.__version__" }
+
+# ─────────────────────────────────────────────────────────────
+# 4. Tests et qualité
+# ─────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Tout avertissement devient une erreur : rien ne passe « en silence »
+filterwarnings = ["error"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",   # style PEP 8
+    "F",        # erreurs logiques
+    "I",        # ordre des imports
+    "B",        # pièges courants (bugbear)
+    "UP",       # syntaxe moderne pour Python 3.11+
+    "S",        # sécurité (règles issues de Bandit)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Dans les tests, « assert » est l'outil normal
+"tests/**" = ["S101"]

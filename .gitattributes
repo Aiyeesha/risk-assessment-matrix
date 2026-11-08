@@ -1,0 +1,6 @@
+# Règle unique pour les fins de ligne : Git stocke tous les fichiers texte en LF,
+# le format Unix utilisé par GitHub et par les outils Python.
+* text=auto eol=lf
+
+# Images : binaires, jamais de conversion ni de diff texte
+*.png binary

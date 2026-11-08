@@ -1,0 +1,98 @@
+# ─────────────────────────────────────────────────────────────
+# Intégration continue : à chaque push sur main et à chaque Pull Request,
+#  1. les méthodes et registres d'exemple du dépôt sont vérifiés par risk-check ;
+#  2. l'outillage est testé sous Linux et Windows ;
+#  3. son code est analysé (style, logique, sécurité).
+# ─────────────────────────────────────────────────────────────
+name: Vérifications
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+# Principe du moindre privilège : le workflow peut seulement LIRE le dépôt
+permissions:
+    contents: read
+
+jobs:
+    # ─── Les fichiers du dépôt sont-ils valides ? ─────────────
+    registers:
+        name: Registres · risk-check
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - name: Récupérer le code
+              uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+
+            - name: Installer Python
+              uses: actions/setup-python@v7
+              with:
+                  python-version: "3.14"
+
+            - name: Installer l'outil
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -e .
+
+            - name: Vérifier les méthodes et les registres d'exemple
+              run: risk-check
+
+    # ─── L'outillage fonctionne-t-il partout ? ────────────────
+    tests:
+        name: Tests · Python ${{ matrix.python-version }} · ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 10
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, windows-latest]
+                python-version: ["3.11", "3.14"]
+        steps:
+            - name: Récupérer le code
+              uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+
+            - name: Installer Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v7
+              with:
+                  python-version: ${{ matrix.python-version }}
+
+            - name: Installer le projet et les outils de test
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -e ".[dev]"
+
+            # -X dev active les avertissements supplémentaires de Python (fichiers non fermés…)
+            - name: Lancer les tests
+              run: python -X dev -m pytest -v
+
+    # ─── Qualité et sécurité du code ──────────────────────────
+    quality:
+        name: Qualité · ruff
+        runs-on: ubuntu-latest
+        timeout-minutes: 5
+        steps:
+            - name: Récupérer le code
+              uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+
+            - name: Installer Python
+              uses: actions/setup-python@v7
+              with:
+                  python-version: "3.14"
+
+            - name: Installer les outils
+              run: |
+                  python -m pip install --upgrade pip
+                  pip install -e ".[dev]"
+
+            - name: Analyse statique
+              run: ruff check --output-format github .
+
+            - name: Formatage
+              run: ruff format --check .

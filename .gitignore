@@ -1,0 +1,35 @@
+# --- Environnement virtuel ---
+.venv/
+
+# --- Fichiers compilés par Python ---
+__pycache__/
+*.py[cod]
+
+# --- Fichiers générés par l'installation, les tests et les rapports ---
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+/rapports/
+/reports/
+
+# --- Secrets et configuration locale ---
+.env
+
+# --- Fichiers propres à l'éditeur et au système ---
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+.sf/
+.sfdx/
+
+# --- Registres réels ---
+# Ce dépôt contient des EXEMPLES fictifs. Le registre de risques d'une vraie organisation
+# décrit ses faiblesses : il ne doit jamais être publié. Rangez-le dans « registres-prives/ »
+# ou nommez-le « *.prive.toml » / « *.private.toml » : ces fichiers ne seront pas versionnés.
+registres-prives/
+private-registers/
+*.prive.toml
+*.private.toml
