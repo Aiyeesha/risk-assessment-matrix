@@ -2,7 +2,8 @@
 # Intégration continue : à chaque push sur main et à chaque Pull Request,
 #  1. les méthodes et registres d'exemple du dépôt sont vérifiés par risk-check ;
 #  2. l'outillage est testé sous Linux et Windows ;
-#  3. son code est analysé (style, logique, sécurité).
+#  3. son code est analysé (style, logique, sécurité) ;
+#  4. l'interface web est typée, testée sur les exports d'exemple, puis construite.
 # ─────────────────────────────────────────────────────────────
 name: Vérifications
 
@@ -99,3 +100,32 @@ jobs:
 
             - name: Formatage
               run: ruff format --check .
+
+    # ─── L'interface web ──────────────────────────────────────
+    # Les données de test sont les exports JSON d'exemple (examples/), dont la fraîcheur est
+    # vérifiée par le job « Registres » : l'interface est testée sur ce que produit l'outil.
+    web:
+        name: Interface web · Node 24
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - name: Récupérer le code
+              uses: actions/checkout@v7
+              with:
+                  persist-credentials: false
+
+            - name: Installer Node.js 24
+              uses: actions/setup-node@v7
+              with:
+                  node-version: 24
+                  cache: npm
+                  cache-dependency-path: web/package-lock.json
+
+            # npm ci : installation exacte depuis package-lock.json, sans le modifier
+            - name: Typer, tester, construire
+              working-directory: web
+              run: |
+                  npm ci
+                  npm run typecheck
+                  npm test
+                  npm run build

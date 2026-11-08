@@ -9,6 +9,19 @@ française, renommée `archive-matrice-risques`).
 
 ## [Non publié]
 
+## [1.1.0] — 2026-11-08
+
+### Ajouté
+- **Interface web** ([`web/`](web/)), publiée sur GitHub Pages : chargement des registres d'exemple
+  ou d'un export JSON local (lu dans le navigateur, jamais envoyé), synthèse, cartographies du risque
+  inhérent et résiduel cliquables, liste filtrable et fiche détaillée, plan d'action, calendrier des
+  revues ; français et anglais, thème clair ou sombre, clavier et mobile.
+- Sécurité de l'interface : validation complète de l'export (types, dates, couleurs, cohérence avec
+  la grille), texte inséré avec `textContent`, liens limités à attack.mitre.org et au dépôt des
+  playbooks, CSP stricte, seule la langue mémorisable (sur demande).
+- CI : job « Interface web · Node 24 » (typage, 24 tests sur les exports d'exemple, construction) ;
+  workflow Pages (publication dès que le dépôt est public) ; Dependabot pour npm.
+
 ## [1.0.0] — 2026-11-08
 
 Première version complète de l'outillage en ligne de commande.

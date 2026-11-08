@@ -13,8 +13,8 @@ A **methodical risk register** for small and mid-sized organisations: identify, 
 treat, accept and review every risk, following a written and verifiable method. Aligned with
 **ISO/IEC 27005:2022** and **EBIOS Risk Manager** (ANSSI, version 1.5 of March 2024).
 
-> ✅ **Version 1.0.0**: the command-line tooling is complete (validation, import, export, reports),
-> with an assessment guide and example registers. The web interface lands in v1.1.0.
+> ✅ **Version 1.1.0**: complete command-line tooling (validation, import, export, reports),
+> assessment guide, example registers and [web interface](https://aiyeesha.github.io/risk-assessment-matrix/).
 
 ![HTML report of the Atelier Lumen example register, dark mode: summary and inherent and residual heat maps](assets/report-en-dark.png)
 
@@ -30,7 +30,39 @@ a fictional company: the effect of the measures reads from one heat map to the o
 | **Treatment and acceptance** | Reduce, accept, transfer or avoid; formal acceptance (who, when, why, until when) when the residual risk stays above the risk appetite. |
 | **Reviews and history** | Next review, overdue reviews and measures, change log. |
 | **Links** | Assets, threats and vulnerabilities, ISO/IEC 27001:2022 Annex A controls, MITRE ATT&CK techniques, and the [incident response](https://github.com/Aiyeesha/incident-response-playbook) playbook to apply if the risk materialises. |
-| **Tools** | `risk-check` (validation), `risk-report` (Markdown and HTML reports), `risk-export` and `risk-import` (JSON, CSV protected against formula injection), web interface. |
+| **Tools** | `risk-check` (validation), `risk-report` (Markdown and HTML reports), `risk-export` and `risk-import` (JSON, CSV protected against formula injection), [web interface](#web-interface). |
+
+## Web interface
+
+**[https://aiyeesha.github.io/risk-assessment-matrix/](https://aiyeesha.github.io/risk-assessment-matrix/)** — explore a register in the browser, with nothing to install.
+
+![Web interface in French: summary and residual risk heat map](assets/web-fr.png)
+
+- **Loading**: the Atelier Lumen example registers (5×5 or EBIOS RM), or your own export
+  (`risk-export register.toml -o register.json`), **read in the browser**: nothing is sent or kept.
+- **Summary**: active risks, risks above the appetite, open and overdue measures, overdue reviews,
+  expired acceptances — deadlines are compared with today's date.
+- **Heat map** of the inherent or residual risk; clicking a cell filters the list.
+- **Filterable list** (status, level, owner, treatment, accent-insensitive search) and a **detailed
+  sheet** for each risk, with its ATT&CK and playbook links.
+- **Action plan** and **review schedule**, overdue items highlighted; French and English, light or
+  dark theme, keyboard and mobile friendly.
+
+![Web interface in English, dark theme: heat map cell selected and filtered list](assets/web-en-dark.png)
+
+> 🔒 **An opened export is not trusted**: it is fully validated before display (types, dates,
+> `#RRGGBB` colours, levels consistent with the grid), text is inserted with `textContent`, only
+> links to attack.mitre.org and the playbook repository stay links, and the CSP forbids any external
+> script, style or request. Only the language can be remembered, on request; the register never is.
+> Validation messages are in French, like those of the command-line tools.
+
+Local development (Node.js 24):
+
+```powershell
+cd web
+npm ci
+npm run typecheck; npm test; npm run build
+```
 
 ## Guide and examples
 
@@ -57,7 +89,7 @@ stay up to date.
 | 4 | References (ISO/IEC 27001, ATT&CK, playbooks), safe CSV import and export | ✅ |
 | 5 | Markdown and HTML reports: `risk-report` | ✅ |
 | 6 | Assessment guide and example registers FR/EN → **v1.0.0** | ✅ |
-| 7 | Web interface on GitHub Pages → **v1.1.0** | ⏳ |
+| 7 | Web interface on GitHub Pages → **v1.1.0** | ✅ |
 | 8 | Public repository and protections | ⏳ |
 
 ## The method
