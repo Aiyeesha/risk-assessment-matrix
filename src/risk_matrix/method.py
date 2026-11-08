@@ -86,9 +86,8 @@ class Method:
     likelihood: Axis
     impact: Axis
     levels: tuple[RiskLevel, ...]  # du moins grave au plus grave
-    grid: tuple[
-        tuple[str, ...], ...
-    ]  # grid[vraisemblance - 1][impact - 1] = identifiant de niveau (table [grid] du fichier)
+    # grid[vraisemblance - 1][impact - 1] = identifiant de niveau (table [grid] du fichier)
+    grid: tuple[tuple[str, ...], ...]
     appetite: str  # niveau le plus élevé acceptable sans acceptation formelle
     authorities: tuple[Authority, ...]
 

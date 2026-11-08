@@ -19,25 +19,22 @@ from __future__ import annotations
 
 import argparse
 import re
-import sys
 import tomllib
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
-from risk_matrix import __version__
+from risk_matrix.cli import add_common_options, methods_dirs, missing_paths
 from risk_matrix.console import setup_streams
 from risk_matrix.method import Method, parse_method
-from risk_matrix.register import parse_register
+from risk_matrix.register import Register, parse_register
 
 # ─────────────────────────────────────────────────────────────
 # 1. Réglages
 # ─────────────────────────────────────────────────────────────
 # Dossiers vérifiés par défaut, depuis la racine du dépôt
 DEFAULT_FOLDERS = ("methods", "examples")
-# Dossier des méthodes mises à disposition des registres, même quand on ne vérifie qu'un registre
-DEFAULT_METHODS = "methods"
 # Un registre réel tient en quelques centaines de Ko : au-delà, on refuse de lire
 # (protection contre un fichier démesuré, volontaire ou non)
 MAX_BYTES = 1_048_576
@@ -120,6 +117,34 @@ def _same(a: Path, b: Path) -> bool:
         return False
 
 
+def load_methods(methods_dirs: Iterable[Path], exclude: Iterable[Path] = ()) -> dict[str, Method]:
+    """Méthodes VALIDES des dossiers donnés, par identifiant (les fichiers invalides sont ignorés ici)."""
+    excluded = list(exclude)
+    methods: dict[str, Method] = {}
+    for path in iter_toml(d for d in methods_dirs if d.is_dir()):
+        if any(_same(path, f) for f in excluded):
+            continue
+        data, _ = load_toml(path)
+        if data is not None and data.get("kind") == "method":
+            method, _ = parse_method(data)
+            if method is not None:
+                methods.setdefault(method.id, method)
+    return methods
+
+
+def load_register(path: Path, methods_dirs: Iterable[Path], today: date) -> tuple[Register | None, list[Problem]]:
+    """Lit et vérifie UN registre (pour risk-export et risk-report) : (registre, problèmes et avertissements)."""
+    data, problems = load_toml(path)
+    if data is None:
+        return None, problems
+    if data.get("kind") != "register":
+        return None, [Problem(path, "kind : « register » attendu (ce fichier n'est pas un registre)")]
+    register, findings = parse_register(data, load_methods(methods_dirs), today)
+    problems = [Problem(path, message) for message in findings.errors]
+    problems += [Problem(path, message, warning=True) for message in findings.warnings]
+    return register, problems
+
+
 def run_checks(
     paths: Iterable[Path], methods_dirs: Iterable[Path] = (), today: date | None = None
 ) -> tuple[int, list[Problem]]:
@@ -159,14 +184,8 @@ def run_checks(
             methods[method.id], origin[method.id] = method, path
 
     # ── 2. Méthodes mises à disposition (non vérifiées ici) ─
-    for path in iter_toml(d for d in methods_dirs if d.is_dir()):
-        if any(_same(path, f) for f in files):
-            continue
-        data, _ = load_toml(path)
-        if data is not None and data.get("kind") == "method":
-            method, _ = parse_method(data)
-            if method is not None:
-                methods.setdefault(method.id, method)
+    for method_id, method in load_methods(methods_dirs, exclude=files).items():
+        methods.setdefault(method_id, method)
 
     # ── 3. Registres ────────────────────────────────────────
     for path, data in registers:
@@ -180,13 +199,6 @@ def run_checks(
 # ─────────────────────────────────────────────────────────────
 # 4. Ligne de commande
 # ─────────────────────────────────────────────────────────────
-def _day(value: str) -> date:
-    try:
-        return date.fromisoformat(value)
-    except ValueError:
-        raise argparse.ArgumentTypeError(f"date invalide « {value} » (format AAAA-MM-JJ)") from None
-
-
 def summary(count: int, problems: list[Problem]) -> str:
     errors = sum(not p.warning for p in problems)
     warnings = len(problems) - errors
@@ -208,33 +220,18 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help=f"fichiers ou dossiers à vérifier (défaut : {', '.join(DEFAULT_FOLDERS)} du dossier courant)",
     )
-    parser.add_argument(
-        "--methods",
-        type=Path,
-        action="append",
-        metavar="DOSSIER",
-        help=f"dossier de méthodes disponibles pour les registres (répétable ; défaut : {DEFAULT_METHODS})",
-    )
-    parser.add_argument(
-        "--today", type=_day, metavar="AAAA-MM-JJ", help="date de référence des échéances (défaut : aujourd'hui)"
-    )
     parser.add_argument("--strict", action="store_true", help="les avertissements font aussi échouer (code 1)")
-    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
+    add_common_options(parser)
     args = parser.parse_args(argv)
 
     root = Path.cwd()
-    asked = list(args.paths) + list(args.methods or [])
-    missing = [p for p in asked if not p.exists()]
-    if missing:
-        print(f"Erreur : introuvable : {', '.join(map(str, missing))}", file=sys.stderr)
+    if missing_paths(list(args.paths) + list(args.methods or [])):
         return 2
     if args.paths:
         targets = list(args.paths)
     else:
         targets = [root / folder for folder in DEFAULT_FOLDERS if (root / folder).is_dir()]
-    methods_dirs = args.methods or [root / DEFAULT_METHODS]
-
-    count, problems = run_checks(targets, methods_dirs, args.today)
+    count, problems = run_checks(targets, methods_dirs(args, root), args.today)
     for problem in problems:
         print(problem.render(root))
     print(summary(count, problems))

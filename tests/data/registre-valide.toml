@@ -29,12 +29,16 @@ existing_controls = ["Antivirus sur les postes"]
 residual = { likelihood = 3, impact = 4 }
 treatment = "reduce"
 review = { last = 2026-10-01, next = 2027-01-01 }
+iso27001 = ["8.7", "8.13"]           # protection contre les logiciels malveillants, sauvegarde
+attack = ["T1486", "T1490"]          # chiffrement des données, blocage de la restauration
+playbooks = ["P02"]
 
 [[risks.measures]]
 title = "Sauvegardes hors ligne quotidiennes"
 owner = "Responsable informatique"
 due = 2026-10-15
 status = "done"
+iso27001 = ["8.13"]
 
 [[risks.measures]]
 title = "EDR sur tous les postes"
@@ -66,6 +70,8 @@ existing_controls = []
 residual = { likelihood = 2, impact = 3 }
 treatment = "reduce"
 review = { last = 2026-09-15, next = 2027-03-15 }
+attack = ["T1566", "T1656"]          # hameçonnage, usurpation d'identité
+playbooks = ["P04", "P07"]
 acceptance = { by = "Claire Martin", role = "Responsable du risque", on = 2026-09-15, until = 2027-09-15, rationale = "Risque résiduel jugé acceptable après mise en place du contre-appel." }
 
 [[risks.measures]]

@@ -34,3 +34,19 @@ française, renommée `archive-matrice-risques`).
 - **Avertissements** distincts des erreurs pour ce qui est échu (mesure ou revue en retard,
   acceptation expirée) ; options `--today` (date de référence), `--strict` (les avertissements font
   échouer) et `--methods` (dossier des méthodes, `methods/` par défaut).
+- **Références** (module `references.py`) : mesures de l'annexe A d'ISO/IEC 27001:2022 (numéros
+  5.1 à 8.34 vérifiés, sans le texte des mesures), techniques MITRE ATT&CK (format vérifié, lien vers
+  la fiche) et playbooks P01 à P07 du dépôt incident-response-playbook, sur chaque risque
+  (`iso27001`, `attack`, `playbooks`) et sur chaque mesure (`iso27001`).
+- **`risk-export`** : export d'un registre valide en JSON (`schema_version` 1 : niveaux calculés,
+  liens, avertissements) ou en CSV (risques et mesures, séparateur adapté à la langue, UTF-8 avec
+  BOM pour Excel).
+- **`risk-import`** : création d'un registre TOML depuis les mêmes CSV (aller-retour avec un tableur),
+  cellules typées et vérifiées, registre obtenu vérifié comme par `risk-check`.
+- Sécurité des CSV : protection contre l'injection de formules (CWE-1236) à l'export, apostrophe de
+  protection retirée à l'import ; fichiers limités à 1 Mio et 5 000 lignes, UTF-8 exigé ; aucun
+  fichier existant écrasé sans `--force`.
+
+### Corrigé
+- `description` et `category` d'un risque sont bien facultatives, comme l'indique la documentation.
+
