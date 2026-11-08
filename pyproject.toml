@@ -44,6 +44,7 @@ Changelog = "https://github.com/Aiyeesha/risk-assessment-matrix/blob/main/CHANGE
 risk-check = "risk_matrix.check:main"      # vérifie les méthodes et les registres
 risk-export = "risk_matrix.export:main"    # exporte un registre en JSON ou en CSV
 risk-import = "risk_matrix.importer:main"  # crée un registre TOML depuis un CSV
+risk-report = "risk_matrix.report:main"    # rapport Markdown ou HTML
 
 # ─────────────────────────────────────────────────────────────
 # 3. Emplacement du code et version

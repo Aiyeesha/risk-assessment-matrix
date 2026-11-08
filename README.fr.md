@@ -6,7 +6,7 @@ Un **registre de risques méthodique** pour une PME ou une ETI : identifier, ana
 traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifiable. Aligné sur
 **ISO/IEC 27005:2022** et sur **EBIOS Risk Manager** (ANSSI, version 1.5 de mars 2024).
 
-> 🚧 **En cours de construction** (v0.1.0). Méthode, registre, références et import/export sont en place ; les rapports arrivent à l'étape 5.
+> 🚧 **En cours de construction** (v0.1.0). Méthode, registre, références, import/export et rapports sont en place ; le guide et les exemples arrivent à l'étape 6.
 
 ## Ce que contiendra le dépôt
 
@@ -27,7 +27,7 @@ traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifi
 | 2 | Méthode : format TOML, préréglages 5×5 et EBIOS RM 4×4 | ✅ |
 | 3 | Registre : modèle, règles de cohérence, `risk-check` | ✅ |
 | 4 | Références (ISO/IEC 27001, ATT&CK, playbooks), import et export CSV sûrs | ✅ |
-| 5 | Rapports Markdown et HTML : `risk-report` | ⏳ |
+| 5 | Rapports Markdown et HTML : `risk-report` | ✅ |
 | 6 | Guide d'évaluation et registres d'exemple FR/EN → **v1.0.0** | ⏳ |
 | 7 | Interface web sur GitHub Pages → **v1.1.0** | ⏳ |
 | 8 | Dépôt public et protections | ⏳ |
@@ -194,6 +194,31 @@ risk-import risques.csv --measures mesures.csv -o registre.prive.toml `
 > comme du texte (recommandation de l'OWASP) ; à l'import, cette apostrophe est retirée et la valeur
 > reste un simple texte dans le TOML. Fichiers importés limités à 1 Mio et 5 000 lignes, UTF-8 exigé
 > (dans Excel : *Enregistrer sous → CSV UTF-8*).
+
+## Rapports
+
+```powershell
+risk-report registre.prive.toml                                 # Markdown sur la sortie standard
+risk-report registre.prive.toml --format html -o rapports/rapport.html
+```
+
+Le rapport, dans la langue du registre, reprend :
+
+| Section | Contenu |
+|---|---|
+| **Synthèse** | Risques actifs et clos, risques au-dessus de l'appétence, mesures ouvertes et en retard, avertissements ; nombre de risques par niveau résiduel. |
+| **Cartographies** | Deux matrices, risque inhérent puis résiduel : chaque case porte son niveau, sa couleur et les risques qui s'y trouvent — l'effet des mesures se lit d'une matrice à l'autre. |
+| **Risques par niveau** | Du plus grave au moins grave, avec responsable, traitement et prochaine revue. |
+| **Au-dessus de l'appétence** | Pour chacun : accepté (par qui, jusqu'à quand), acceptation expirée, ou réduction en cours. |
+| **Plan d'action** | Mesures ouvertes par échéance, retards en évidence. |
+| **Calendrier des revues** | Prochaines revues, retards en évidence. |
+| **Références** | Mesures de l'annexe A citées par thème, playbooks et techniques ATT&CK avec les risques concernés (liens). |
+
+Le rapport HTML est **un seul fichier**, imprimable (A4 paysage, couleurs conservées) et lisible en
+mode sombre. Il ne contient **aucun script ni aucune ressource externe** : tout texte du registre est
+échappé, et sa politique de sécurité du contenu (CSP) n'autorise que sa propre feuille de style,
+désignée par son empreinte SHA-256. Les couleurs des niveaux offrent un contraste d'au moins 4,5:1
+avec le texte (WCAG 2.2, niveau AA). Le dossier `rapports/` est exclu de Git.
 
 ## Utilisation
 
