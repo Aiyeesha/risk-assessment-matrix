@@ -133,4 +133,4 @@ Chaque case indique son niveau et les risques actifs qui s'y trouvent.
 
 ---
 
-*Généré par risk-assessment-matrix 1.0.0 le 08/11/2026.*
+*Généré par risk-assessment-matrix 1.1.0 le 08/11/2026.*

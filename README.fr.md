@@ -13,8 +13,8 @@ Un **registre de risques méthodique** pour une PME ou une ETI : identifier, ana
 traiter, accepter et revoir chaque risque, selon une méthode écrite et vérifiable. Aligné sur
 **ISO/IEC 27005:2022** et sur **EBIOS Risk Manager** (ANSSI, version 1.5 de mars 2024).
 
-> ✅ **Version 1.0.0** : l'outillage en ligne de commande est complet (vérification, import, export,
-> rapports), avec un guide d'évaluation et des registres d'exemple. L'interface web arrive en v1.1.0.
+> ✅ **Version 1.1.0** : outillage en ligne de commande complet (vérification, import, export,
+> rapports), guide d'évaluation, registres d'exemple et [interface web](https://aiyeesha.github.io/risk-assessment-matrix/).
 
 ![Rapport HTML du registre d'exemple d'Atelier Lumen : synthèse et cartographies du risque inhérent et résiduel](assets/report-fr.png)
 
@@ -30,7 +30,40 @@ d'Atelier Lumen, entreprise fictive : l'effet des mesures se lit d'une cartograp
 | **Traitement et acceptation** | Réduire, accepter, transférer ou éviter ; acceptation formelle (qui, quand, pourquoi, jusqu'à quand) lorsque le risque résiduel reste au-dessus de l'appétence. |
 | **Revues et historique** | Prochaine revue, revues et mesures en retard, journal des modifications. |
 | **Liens** | Actifs, menaces et vulnérabilités, mesures de l'annexe A d'ISO/IEC 27001:2022, techniques MITRE ATT&CK, et playbook de [réponse aux incidents](https://github.com/Aiyeesha/incident-response-playbook) à appliquer si le risque se réalise. |
-| **Outils** | `risk-check` (vérification), `risk-report` (rapports Markdown et HTML), `risk-export` et `risk-import` (JSON, CSV protégé contre l'injection de formules), interface web. |
+| **Outils** | `risk-check` (vérification), `risk-report` (rapports Markdown et HTML), `risk-export` et `risk-import` (JSON, CSV protégé contre l'injection de formules), [interface web](#interface-web). |
+
+## Interface web
+
+**[https://aiyeesha.github.io/risk-assessment-matrix/](https://aiyeesha.github.io/risk-assessment-matrix/)** — explorer un registre dans le navigateur, sans rien installer.
+
+![Interface web en français : synthèse et cartographie du risque résiduel](assets/web-fr.png)
+
+- **Chargement** : les registres d'exemple d'Atelier Lumen (5×5 ou EBIOS RM), ou votre propre export
+  (`risk-export registre.toml -o registre.json`), **lu dans le navigateur** : rien n'est envoyé ni
+  conservé.
+- **Synthèse** : risques actifs, au-dessus de l'appétence, mesures ouvertes et en retard, revues en
+  retard, acceptations expirées — les échéances sont comparées à la date du jour.
+- **Cartographie** du risque inhérent ou résiduel ; un clic sur une case filtre la liste.
+- **Liste filtrable** (état, niveau, responsable, traitement, recherche sans accents) et **fiche
+  détaillée** de chaque risque, avec ses liens ATT&CK et playbooks.
+- **Plan d'action** et **calendrier des revues**, retards en évidence ; français et anglais, thème
+  clair ou sombre, utilisable au clavier et sur mobile.
+
+![Interface web en anglais, thème sombre : case de la cartographie sélectionnée et liste filtrée](assets/web-en-dark.png)
+
+> 🔒 **Un export ouvert n'est pas digne de confiance** : il est entièrement validé avant affichage
+> (types, dates, couleurs `#RRVVBB`, niveaux cohérents avec la grille), le texte est inséré avec
+> `textContent`, seuls les liens vers attack.mitre.org et le dépôt des playbooks restent des liens,
+> et la CSP interdit tout script, style ou requête externe. Seule la langue peut être mémorisée, sur
+> demande ; le registre ne l'est jamais.
+
+Développement local (Node.js 24) :
+
+```powershell
+cd web
+npm ci
+npm run typecheck; npm test; npm run build
+```
 
 ## Guide et exemples
 
@@ -58,7 +91,7 @@ qu'elles restent à jour.
 | 4 | Références (ISO/IEC 27001, ATT&CK, playbooks), import et export CSV sûrs | ✅ |
 | 5 | Rapports Markdown et HTML : `risk-report` | ✅ |
 | 6 | Guide d'évaluation et registres d'exemple FR/EN → **v1.0.0** | ✅ |
-| 7 | Interface web sur GitHub Pages → **v1.1.0** | ⏳ |
+| 7 | Interface web sur GitHub Pages → **v1.1.0** | ✅ |
 | 8 | Dépôt public et protections | ⏳ |
 
 ## La méthode

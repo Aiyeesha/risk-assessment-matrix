@@ -8,4 +8,4 @@ risk_matrix — outillage du registre de risques.
 """
 
 # Source unique de la version (lue par pyproject.toml)
-__version__ = "1.0.0"
+__version__ = "1.1.0"

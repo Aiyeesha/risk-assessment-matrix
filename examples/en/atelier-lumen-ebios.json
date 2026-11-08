@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generator": "risk-assessment-matrix 1.0.0",
+  "generator": "risk-assessment-matrix 1.1.0",
   "as_of": "2026-11-08",
   "register": {
     "organisation": "Atelier Lumen (fictional company)",

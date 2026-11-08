@@ -33,3 +33,8 @@ registres-prives/
 private-registers/
 *.prive.toml
 *.private.toml
+
+# --- Interface web : dépendances et code compilé (reconstruits en CI) ---
+web/node_modules/
+web/dist/
+web/data/

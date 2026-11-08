@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!--
+    Politique de sécurité du contenu (CSP), déclarée ici car GitHub Pages ne permet pas
+    d'envoyer d'en-têtes HTTP personnalisés :
+      default-src 'none'   tout est interdit par défaut ;
+      script-src 'self'    seuls les scripts de ce site s'exécutent (aucun script en ligne) ;
+      style-src 'self'     seule la feuille de style de ce site s'applique ;
+      img-src 'self' data: icône de l'onglet ;
+      connect-src 'self'   seule requête réseau permise : lire les registres d'exemple de CE site ;
+      base-uri / form-action 'none'  ni balise <base>, ni envoi de formulaire.
+    Un registre ouvert depuis l'ordinateur est lu localement (FileReader) : il ne peut partir nulle part.
+  -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Explorer un registre de risques : cartographies du risque inhérent et résiduel, plan d'action et revues, dans le navigateur. Explore a risk register: heat maps, action plan and reviews, in the browser.">
+
+  <title>Matrice des risques — cartographie, plan d'action et revues</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2316171b'/%3E%3Crect x='6' y='6' width='6' height='6' fill='%232e7d4f'/%3E%3Crect x='13' y='6' width='6' height='6' fill='%23b85300'/%3E%3Crect x='20' y='6' width='6' height='6' fill='%23b3261e'/%3E%3Crect x='6' y='13' width='6' height='6' fill='%232e7d4f'/%3E%3Crect x='13' y='13' width='6' height='6' fill='%238a6d00'/%3E%3Crect x='20' y='13' width='6' height='6' fill='%23b85300'/%3E%3Crect x='6' y='20' width='6' height='6' fill='%232e7d4f'/%3E%3Crect x='13' y='20' width='6' height='6' fill='%232e7d4f'/%3E%3Crect x='20' y='20' width='6' height='6' fill='%238a6d00'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./dist/main.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main" id="skip-link">Aller au contenu</a>
+
+  <header class="top">
+    <span class="brand"><span class="brand-mark" aria-hidden="true"></span>Risk Assessment Matrix</span>
+    <nav class="langs" aria-label="Langue / Language">
+      <button type="button" id="lang-fr" lang="fr" aria-pressed="true">FR</button>
+      <button type="button" id="lang-en" lang="en" aria-pressed="false">EN</button>
+    </nav>
+  </header>
+
+  <main id="main">
+    <p class="intro" id="intro"></p>
+
+    <!-- 1. Choix du registre -->
+    <section class="panel" aria-labelledby="load-title">
+      <h1 id="load-title"></h1>
+      <div class="load-actions">
+        <button type="button" id="example-5x5"></button>
+        <button type="button" id="example-ebios"></button>
+        <label class="file-button"><span id="open-file-label"></span>
+          <input type="file" id="file" accept=".json,application/json">
+        </label>
+      </div>
+      <p class="muted" id="privacy"></p>
+      <p id="status" role="status" aria-live="polite"></p>
+      <dl class="meta" id="meta" hidden></dl>
+    </section>
+
+    <div id="app" hidden>
+      <!-- 2. Synthèse -->
+      <section class="panel" aria-labelledby="summary-title">
+        <h2 id="summary-title"></h2>
+        <ul class="cards" id="cards"></ul>
+      </section>
+
+      <!-- 3. Cartographie -->
+      <section class="panel" aria-labelledby="map-title">
+        <h2 id="map-title"></h2>
+        <div class="toggle" role="group" aria-labelledby="map-title">
+          <button type="button" id="show-inherent" aria-pressed="false"></button>
+          <button type="button" id="show-residual" aria-pressed="true"></button>
+        </div>
+        <p class="muted" id="map-hint"></p>
+        <div class="scroll"><table class="heat" id="heat"></table></div>
+      </section>
+
+      <!-- 4. Filtres et liste des risques -->
+      <section class="panel" aria-labelledby="risks-title">
+        <h2 id="risks-title"></h2>
+        <form class="filters" id="filters" aria-label="Filtres">
+          <label><span id="f-status-label"></span><select id="f-status"></select></label>
+          <label><span id="f-level-label"></span><select id="f-level"></select></label>
+          <label><span id="f-owner-label"></span><select id="f-owner"></select></label>
+          <label><span id="f-treatment-label"></span><select id="f-treatment"></select></label>
+          <label class="grow"><span id="f-search-label"></span><input type="search" id="f-search" autocomplete="off"></label>
+          <button type="button" id="f-reset"></button>
+        </form>
+        <p class="chip" id="cell-filter" hidden></p>
+        <p class="muted" id="count" aria-live="polite"></p>
+        <div class="scroll"><table class="list" id="risks"></table></div>
+        <article class="detail" id="detail" hidden tabindex="-1"></article>
+      </section>
+
+      <!-- 5. Plan d'action et revues -->
+      <section class="panel" aria-labelledby="plan-title">
+        <h2 id="plan-title"></h2>
+        <div class="scroll"><table class="list" id="plan"></table></div>
+      </section>
+      <section class="panel" aria-labelledby="reviews-title">
+        <h2 id="reviews-title"></h2>
+        <div class="scroll"><table class="list" id="reviews"></table></div>
+      </section>
+    </div>
+
+    <section class="panel settings">
+      <label class="check"><input type="checkbox" id="remember"> <span id="remember-label"></span></label>
+      <p class="muted" id="remember-help"></p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p id="footer-text"></p>
+    <p><a id="guide-link" rel="noopener noreferrer"></a> · <a id="repo-link" href="https://github.com/Aiyeesha/risk-assessment-matrix" rel="noopener noreferrer"></a></p>
+  </footer>
+</body>
+</html>
