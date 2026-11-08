@@ -81,7 +81,7 @@ jobs:
 
             - name: Configurer Pages
               if: ${{ !github.event.repository.private }}
-              uses: actions/configure-pages@v5
+              uses: actions/configure-pages@v6
 
             - name: Empaqueter le site
               if: ${{ !github.event.repository.private }}
