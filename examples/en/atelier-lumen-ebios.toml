@@ -1,0 +1,129 @@
+# ─────────────────────────────────────────────────────────────
+# Example register — Atelier Lumen (FICTIONAL COMPANY), EBIOS Risk Manager 4×4 method
+#
+# Same company as atelier-lumen.toml, seen through the EBIOS RM scales: likelihood V1–V4,
+# severity G1–G4 and a three-zone acceptance grid. Each risk matches a strategic scenario from
+# workshop 3: "risk origin → target objective", then the attack path.
+# R04 shows the most demanding case: an "unacceptable" risk knowingly accepted by executive
+# management (security accreditation), for six months at most.
+# ─────────────────────────────────────────────────────────────
+kind = "register"
+format = 1
+method = "ebios-rm-4x4"
+lang = "en"
+organisation = "Atelier Lumen (fictional company)"
+assessed_on = 2026-09-15
+assessor = "Risk committee (CISO, CIO, CFO, DPO)"
+
+[[risks]]
+id = "R01"
+title = "Business halted by ransomware"
+description = "Strategic scenario: a criminal group seeks financial gain by paralysing the company. Attack path: VPN without MFA, stolen account, file server, NAS backups."
+category = "Strategic scenario — cybercrime"
+owner = "Julien Morel, CIO"
+assets = ["Business asset: order preparation and shipping", "File server", "Backup NAS"]
+threat = "Risk origin: cybercriminal group — target objective: ransom and resale of data"
+vulnerability = "VPN without multi-factor authentication; backups reachable from the office network"
+gdpr = true
+nis2 = false
+inherent = { likelihood = 3, impact = 4 }
+existing_controls = ["Antivirus", "Weekly tape copy"]
+residual = { likelihood = 2, impact = 3 }
+treatment = "reduce"
+review = { last = 2026-10-15, next = 2027-04-15 }
+iso27001 = ["5.17", "8.7", "8.13", "8.22"]
+attack = ["T1133", "T1486", "T1490"]
+playbooks = ["P02"]
+
+[[risks.measures]]
+title = "Multi-factor authentication on the VPN"
+owner = "Julien Morel, CIO"
+due = 2026-10-15
+status = "done"
+iso27001 = ["8.5"]
+
+[[risks.measures]]
+title = "Immutable backups and isolation of the NAS"
+owner = "Julien Morel, CIO"
+due = 2027-01-31
+status = "in-progress"
+iso27001 = ["8.13", "8.22"]
+
+[[risks]]
+id = "R02"
+title = "Diversion of supplier payments"
+description = "Strategic scenario: a fraudster seeks to divert funds by posing as a supplier to the accounting team."
+category = "Strategic scenario — fraud"
+owner = "Nadia Ferrand, CFO"
+assets = ["Business asset: supplier payments"]
+threat = "Risk origin: fraudster — target objective: financial gain"
+vulnerability = "Bank details changed on the strength of a single email"
+gdpr = false
+nis2 = false
+inherent = { likelihood = 3, impact = 3 }
+residual = { likelihood = 1, impact = 3 }
+treatment = "reduce"
+review = { last = 2026-10-01, next = 2027-04-01 }
+acceptance = { by = "Nadia Ferrand", role = "Risk owner, after the CISO's opinion", on = 2026-10-01, until = 2027-10-01, rationale = "Systematic call-backs and training in place; favourable opinion of the CISO dated 30 September 2026." }
+iso27001 = ["5.14", "6.3"]
+attack = ["T1566", "T1656"]
+playbooks = ["P07"]
+
+[[risks.measures]]
+title = "Mandatory call-back before any change of bank details"
+owner = "Nadia Ferrand, CFO"
+due = 2026-09-30
+status = "done"
+iso27001 = ["5.14"]
+
+[[risks.measures]]
+title = "Payment fraud training for the accounting team"
+owner = "Human resources manager"
+due = 2026-09-30
+status = "done"
+iso27001 = ["6.3"]
+
+[[risks]]
+id = "R03"
+title = "Theft of the online shop's customer data"
+description = "Strategic scenario: an attacker seeks to resell customer data by exploiting a flaw in the online shop."
+category = "Strategic scenario — data theft"
+owner = "Camille Roy, e-commerce manager"
+assets = ["Business asset: customer relationship", "Online shop", "Customer database"]
+threat = "Risk origin: opportunistic attacker — target objective: resale of data"
+vulnerability = "Plug-ins rarely updated; no recent penetration test"
+gdpr = true
+nis2 = false
+inherent = { likelihood = 2, impact = 4 }
+residual = { likelihood = 1, impact = 4 }
+treatment = "reduce"
+review = { last = 2026-09-15, next = 2027-03-15 }
+iso27001 = ["8.8", "8.26"]
+attack = ["T1190"]
+playbooks = ["P03"]
+
+[[risks.measures]]
+title = "Penetration test of the shop and fixing of the flaws found"
+owner = "Camille Roy"
+due = 2026-12-31
+status = "in-progress"
+iso27001 = ["8.8", "8.29"]
+
+[[risks]]
+id = "R04"
+title = "Dependence on a single payment provider"
+description = "Strategic scenario: the compromise or failure of the payment provider blocks every online sale, with no fallback."
+category = "Strategic scenario — ecosystem"
+owner = "Camille Roy, e-commerce manager"
+assets = ["Business asset: online sales"]
+threat = "Risk origin: attacker targeting the provider — target objective: reach its customers"
+vulnerability = "A single payment provider, deeply integrated into the shop"
+gdpr = false
+nis2 = false
+inherent = { likelihood = 2, impact = 4 }
+residual = { likelihood = 2, impact = 4 }
+treatment = "accept"
+review = { last = 2026-10-01, next = 2027-01-01 }
+acceptance = { by = "Hélène Bastide", role = "Executive management (security accreditation)", on = 2026-10-01, until = 2027-04-01, rationale = "A second provider cannot be integrated before the shop redesign planned for spring 2027; risk accepted until then and reviewed every quarter." }
+iso27001 = ["5.19", "5.21", "5.30"]
+playbooks = ["P06"]

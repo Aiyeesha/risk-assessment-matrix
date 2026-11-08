@@ -1,0 +1,479 @@
+{
+  "schema_version": 1,
+  "generator": "risk-assessment-matrix 1.0.0",
+  "as_of": "2026-11-08",
+  "register": {
+    "organisation": "Atelier Lumen (fictional company)",
+    "lang": "en",
+    "assessed_on": "2026-09-15",
+    "assessor": "Risk committee (CISO, CIO, CFO, DPO)"
+  },
+  "method": {
+    "id": "ebios-rm-4x4",
+    "name": "EBIOS Risk Manager — likelihood V1–V4 × severity G1–G4",
+    "references": [
+      "EBIOS Risk Manager 1.5 (ANSSI, 2024)",
+      "ISO/IEC 27005:2022"
+    ],
+    "likelihood": {
+      "name": "Likelihood",
+      "levels": [
+        {
+          "value": 1,
+          "label": "V1 — Unlikely",
+          "description": "The scenario is unlikely to succeed: weakly motivated risk origin or difficult attack path."
+        },
+        {
+          "value": 2,
+          "label": "V2 — Likely",
+          "description": "The scenario may succeed: attack means available, partial defences."
+        },
+        {
+          "value": 3,
+          "label": "V3 — Very likely",
+          "description": "The scenario is very likely to succeed: determined risk origin, known weaknesses."
+        },
+        {
+          "value": 4,
+          "label": "V4 — Almost certain",
+          "description": "The scenario will almost surely succeed, or is already under way."
+        }
+      ]
+    },
+    "impact": {
+      "name": "Severity",
+      "levels": [
+        {
+          "value": 1,
+          "label": "G1 — Minor",
+          "description": "Consequences easily absorbed by the organisation's margins."
+        },
+        {
+          "value": 2,
+          "label": "G2 — Significant",
+          "description": "Degraded but controlled operation, with no harm to people's safety."
+        },
+        {
+          "value": 3,
+          "label": "G3 — Severe",
+          "description": "Severely degraded operation, sharp drop in performance."
+        },
+        {
+          "value": 4,
+          "label": "G4 — Critical",
+          "description": "Business impossible in whole or in part; survival of the organisation at stake."
+        }
+      ]
+    },
+    "levels": [
+      {
+        "id": "acceptable",
+        "label": "Acceptable as is",
+        "color": "#2e7d4f",
+        "review_months": 12,
+        "guidance": "No additional measure required; reviewed at the strategic cycle."
+      },
+      {
+        "id": "tolerable",
+        "label": "Tolerable under control",
+        "color": "#b85300",
+        "review_months": 6,
+        "guidance": "Reduction measures to plan; tracked at the operational cycle."
+      },
+      {
+        "id": "unacceptable",
+        "label": "Unacceptable",
+        "color": "#b3261e",
+        "review_months": 3,
+        "guidance": "Treatment mandatory; exceptional, justified and short-lived acceptance only."
+      }
+    ],
+    "grid": [
+      [
+        "acceptable",
+        "acceptable",
+        "tolerable",
+        "tolerable"
+      ],
+      [
+        "acceptable",
+        "tolerable",
+        "tolerable",
+        "unacceptable"
+      ],
+      [
+        "tolerable",
+        "tolerable",
+        "unacceptable",
+        "unacceptable"
+      ],
+      [
+        "tolerable",
+        "unacceptable",
+        "unacceptable",
+        "unacceptable"
+      ]
+    ],
+    "appetite": "acceptable",
+    "authorities": [
+      {
+        "level": "tolerable",
+        "by": "Risk owner, after the CISO's opinion",
+        "max_months": 12
+      },
+      {
+        "level": "unacceptable",
+        "by": "Executive management (security accreditation)",
+        "max_months": 6
+      }
+    ]
+  },
+  "risks": [
+    {
+      "id": "R01",
+      "title": "Business halted by ransomware",
+      "description": "Strategic scenario: a criminal group seeks financial gain by paralysing the company. Attack path: VPN without MFA, stolen account, file server, NAS backups.",
+      "category": "Strategic scenario — cybercrime",
+      "owner": "Julien Morel, CIO",
+      "status": "active",
+      "assets": [
+        "Business asset: order preparation and shipping",
+        "File server",
+        "Backup NAS"
+      ],
+      "threat": "Risk origin: cybercriminal group — target objective: ransom and resale of data",
+      "vulnerability": "VPN without multi-factor authentication; backups reachable from the office network",
+      "gdpr": true,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 3,
+        "impact": 4,
+        "level": "unacceptable"
+      },
+      "existing_controls": [
+        "Antivirus",
+        "Weekly tape copy"
+      ],
+      "measures": [
+        {
+          "title": "Multi-factor authentication on the VPN",
+          "owner": "Julien Morel, CIO",
+          "due": "2026-10-15",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "8.5",
+              "theme": "Technological controls"
+            }
+          ]
+        },
+        {
+          "title": "Immutable backups and isolation of the NAS",
+          "owner": "Julien Morel, CIO",
+          "due": "2027-01-31",
+          "status": "in-progress",
+          "iso27001": [
+            {
+              "id": "8.13",
+              "theme": "Technological controls"
+            },
+            {
+              "id": "8.22",
+              "theme": "Technological controls"
+            }
+          ]
+        }
+      ],
+      "residual": {
+        "likelihood": 2,
+        "impact": 3,
+        "level": "tolerable",
+        "justification": ""
+      },
+      "treatment": "reduce",
+      "transfer_to": "",
+      "acceptance": null,
+      "review": {
+        "last": "2026-10-15",
+        "next": "2027-04-15"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "5.17",
+          "theme": "Organisational controls"
+        },
+        {
+          "id": "8.7",
+          "theme": "Technological controls"
+        },
+        {
+          "id": "8.13",
+          "theme": "Technological controls"
+        },
+        {
+          "id": "8.22",
+          "theme": "Technological controls"
+        }
+      ],
+      "attack": [
+        {
+          "id": "T1133",
+          "url": "https://attack.mitre.org/techniques/T1133/"
+        },
+        {
+          "id": "T1486",
+          "url": "https://attack.mitre.org/techniques/T1486/"
+        },
+        {
+          "id": "T1490",
+          "url": "https://attack.mitre.org/techniques/T1490/"
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "P02",
+          "title": "Ransomware attack",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/en/playbooks/P02-ransomware.md"
+        }
+      ]
+    },
+    {
+      "id": "R02",
+      "title": "Diversion of supplier payments",
+      "description": "Strategic scenario: a fraudster seeks to divert funds by posing as a supplier to the accounting team.",
+      "category": "Strategic scenario — fraud",
+      "owner": "Nadia Ferrand, CFO",
+      "status": "active",
+      "assets": [
+        "Business asset: supplier payments"
+      ],
+      "threat": "Risk origin: fraudster — target objective: financial gain",
+      "vulnerability": "Bank details changed on the strength of a single email",
+      "gdpr": false,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 3,
+        "impact": 3,
+        "level": "unacceptable"
+      },
+      "existing_controls": [],
+      "measures": [
+        {
+          "title": "Mandatory call-back before any change of bank details",
+          "owner": "Nadia Ferrand, CFO",
+          "due": "2026-09-30",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "5.14",
+              "theme": "Organisational controls"
+            }
+          ]
+        },
+        {
+          "title": "Payment fraud training for the accounting team",
+          "owner": "Human resources manager",
+          "due": "2026-09-30",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "6.3",
+              "theme": "People controls"
+            }
+          ]
+        }
+      ],
+      "residual": {
+        "likelihood": 1,
+        "impact": 3,
+        "level": "tolerable",
+        "justification": ""
+      },
+      "treatment": "reduce",
+      "transfer_to": "",
+      "acceptance": {
+        "by": "Nadia Ferrand",
+        "role": "Risk owner, after the CISO's opinion",
+        "on": "2026-10-01",
+        "until": "2027-10-01",
+        "rationale": "Systematic call-backs and training in place; favourable opinion of the CISO dated 30 September 2026."
+      },
+      "review": {
+        "last": "2026-10-01",
+        "next": "2027-04-01"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "5.14",
+          "theme": "Organisational controls"
+        },
+        {
+          "id": "6.3",
+          "theme": "People controls"
+        }
+      ],
+      "attack": [
+        {
+          "id": "T1566",
+          "url": "https://attack.mitre.org/techniques/T1566/"
+        },
+        {
+          "id": "T1656",
+          "url": "https://attack.mitre.org/techniques/T1656/"
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "P07",
+          "title": "Compromised account and payment fraud",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/en/playbooks/P07-compromised-account.md"
+        }
+      ]
+    },
+    {
+      "id": "R03",
+      "title": "Theft of the online shop's customer data",
+      "description": "Strategic scenario: an attacker seeks to resell customer data by exploiting a flaw in the online shop.",
+      "category": "Strategic scenario — data theft",
+      "owner": "Camille Roy, e-commerce manager",
+      "status": "active",
+      "assets": [
+        "Business asset: customer relationship",
+        "Online shop",
+        "Customer database"
+      ],
+      "threat": "Risk origin: opportunistic attacker — target objective: resale of data",
+      "vulnerability": "Plug-ins rarely updated; no recent penetration test",
+      "gdpr": true,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 2,
+        "impact": 4,
+        "level": "unacceptable"
+      },
+      "existing_controls": [],
+      "measures": [
+        {
+          "title": "Penetration test of the shop and fixing of the flaws found",
+          "owner": "Camille Roy",
+          "due": "2026-12-31",
+          "status": "in-progress",
+          "iso27001": [
+            {
+              "id": "8.8",
+              "theme": "Technological controls"
+            },
+            {
+              "id": "8.29",
+              "theme": "Technological controls"
+            }
+          ]
+        }
+      ],
+      "residual": {
+        "likelihood": 1,
+        "impact": 4,
+        "level": "tolerable",
+        "justification": ""
+      },
+      "treatment": "reduce",
+      "transfer_to": "",
+      "acceptance": null,
+      "review": {
+        "last": "2026-09-15",
+        "next": "2027-03-15"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "8.8",
+          "theme": "Technological controls"
+        },
+        {
+          "id": "8.26",
+          "theme": "Technological controls"
+        }
+      ],
+      "attack": [
+        {
+          "id": "T1190",
+          "url": "https://attack.mitre.org/techniques/T1190/"
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "P03",
+          "title": "Data breach",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/en/playbooks/P03-data-breach.md"
+        }
+      ]
+    },
+    {
+      "id": "R04",
+      "title": "Dependence on a single payment provider",
+      "description": "Strategic scenario: the compromise or failure of the payment provider blocks every online sale, with no fallback.",
+      "category": "Strategic scenario — ecosystem",
+      "owner": "Camille Roy, e-commerce manager",
+      "status": "active",
+      "assets": [
+        "Business asset: online sales"
+      ],
+      "threat": "Risk origin: attacker targeting the provider — target objective: reach its customers",
+      "vulnerability": "A single payment provider, deeply integrated into the shop",
+      "gdpr": false,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 2,
+        "impact": 4,
+        "level": "unacceptable"
+      },
+      "existing_controls": [],
+      "measures": [],
+      "residual": {
+        "likelihood": 2,
+        "impact": 4,
+        "level": "unacceptable",
+        "justification": ""
+      },
+      "treatment": "accept",
+      "transfer_to": "",
+      "acceptance": {
+        "by": "Hélène Bastide",
+        "role": "Executive management (security accreditation)",
+        "on": "2026-10-01",
+        "until": "2027-04-01",
+        "rationale": "A second provider cannot be integrated before the shop redesign planned for spring 2027; risk accepted until then and reviewed every quarter."
+      },
+      "review": {
+        "last": "2026-10-01",
+        "next": "2027-01-01"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "5.19",
+          "theme": "Organisational controls"
+        },
+        {
+          "id": "5.21",
+          "theme": "Organisational controls"
+        },
+        {
+          "id": "5.30",
+          "theme": "Organisational controls"
+        }
+      ],
+      "attack": [],
+      "playbooks": [
+        {
+          "id": "P06",
+          "title": "Denial of service",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/en/playbooks/P06-denial-of-service.md"
+        }
+      ]
+    }
+  ],
+  "warnings": []
+}

@@ -40,6 +40,9 @@ jobs:
             - name: Vérifier les méthodes et les registres d'exemple
               run: risk-check
 
+            - name: Vérifier que les sorties d'exemple sont à jour
+              run: python scripts/build_examples.py --check
+
     # ─── L'outillage fonctionne-t-il partout ? ────────────────
     tests:
         name: Tests · Python ${{ matrix.python-version }} · ${{ matrix.os }}

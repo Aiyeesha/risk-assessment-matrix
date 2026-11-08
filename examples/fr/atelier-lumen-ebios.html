@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'sha256-QhlEd6irzm66cbE+qcYGiUl3r/XV9ymxcsxQm5od8y4='; img-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport de risques — Atelier Lumen (entreprise fictive)</title>
+<style>:root { color-scheme: light dark; --fg: #1b1b1f; --bg: #ffffff; --muted: #5d5f66; --line: #d9dadf; --late: #b3261e; }
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #e6e6ea; --bg: #16171b; --muted: #a5a7ae; --line: #3a3c43; --late: #ff8a80; }
+}
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 72rem; padding: 2rem 1rem; font: 15px/1.5 system-ui, -apple-system, "Segoe UI",
+  Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+h1 { font-size: 1.6rem; margin: 0 0 .5rem; }
+h2 { font-size: 1.2rem; margin: 2rem 0 .6rem; padding-bottom: .2rem; border-bottom: 2px solid var(--line); }
+h3 { font-size: 1rem; margin: 1.2rem 0 .4rem; }
+.meta { list-style: none; padding: 0; margin: 0; color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; margin: .4rem 0 1rem; }
+th, td { border: 1px solid var(--line); padding: .35rem .5rem; text-align: left; vertical-align: top; }
+th { font-weight: 600; }
+.heat td { text-align: center; min-width: 6rem; }
+.heat th[scope="row"] { white-space: nowrap; }
+.note { display: block; font-size: .75rem; opacity: .9; }
+.level { font-weight: 600; }
+.late { color: var(--late); font-weight: 700; }
+a { color: inherit; }
+footer { margin-top: 2.5rem; color: var(--muted); font-size: .85rem; }
+@media print {
+  body { max-width: none; padding: 0; font-size: 11px; }
+  h2 { break-after: avoid; }
+  table, tr { break-inside: avoid; }
+  a { text-decoration: none; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@page { size: A4 landscape; margin: 12mm; }
+.lv-acceptable { background: #2e7d4f; color: #ffffff; }
+.lv-tolerable { background: #b85300; color: #ffffff; }
+.lv-unacceptable { background: #b3261e; color: #ffffff; }</style>
+</head>
+<body>
+<header>
+<h1>Rapport de risques — Atelier Lumen (entreprise fictive)</h1>
+<ul class="meta"><li>Méthode : EBIOS Risk Manager — vraisemblance V1–V4 × gravité G1–G4</li><li>Évaluation : 15/09/2026, par Comité des risques (RSSI, DSI, DAF, DPO)</li><li>Situation au : 08/11/2026</li></ul>
+</header>
+<main>
+<h2>Synthèse</h2>
+<ul><li>4 risque(s) actif(s), 0 clos</li><li>4 au-dessus de l&#x27;appétence (« Acceptable en l&#x27;état »)</li><li>2 mesure(s) ouverte(s), dont 0 en retard</li><li>0 avertissement(s) à traiter</li></ul>
+<div class="table"><table>
+<thead><tr><th scope="col">Niveau résiduel</th><th scope="col">Risques</th></tr></thead>
+<tbody>
+<tr><td class="lv-unacceptable level-cell">Inacceptable</td><td>1</td></tr>
+<tr><td class="lv-tolerable level-cell">Tolérable sous contrôle</td><td>3</td></tr>
+<tr><td class="lv-acceptable level-cell">Acceptable en l&#x27;état</td><td>0</td></tr>
+</tbody></table></div>
+<h2>Cartographie — risque inhérent</h2>
+<div class="table"><table class="heat">
+<thead><tr><th scope="col">Vraisemblance ↓ / Gravité →</th><th scope="col">G1 — Mineure</th><th scope="col">G2 — Significative</th><th scope="col">G3 — Grave</th><th scope="col">G4 — Critique</th></tr></thead>
+<tbody>
+<tr><th scope="row">V4 — Quasi certain</th><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span></td></tr>
+<tr><th scope="row">V3 — Très vraisemblable</th><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span><strong>R02</strong></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span><strong>R01</strong></td></tr>
+<tr><th scope="row">V2 — Vraisemblable</th><td class="lv-acceptable level-cell"><span class="note">Acceptable en l&#x27;état</span></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span><strong>R04, R03</strong></td></tr>
+<tr><th scope="row">V1 — Peu vraisemblable</th><td class="lv-acceptable level-cell"><span class="note">Acceptable en l&#x27;état</span></td><td class="lv-acceptable level-cell"><span class="note">Acceptable en l&#x27;état</span></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td></tr>
+</tbody></table></div>
+<h2>Cartographie — risque résiduel</h2>
+<div class="table"><table class="heat">
+<thead><tr><th scope="col">Vraisemblance ↓ / Gravité →</th><th scope="col">G1 — Mineure</th><th scope="col">G2 — Significative</th><th scope="col">G3 — Grave</th><th scope="col">G4 — Critique</th></tr></thead>
+<tbody>
+<tr><th scope="row">V4 — Quasi certain</th><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span></td></tr>
+<tr><th scope="row">V3 — Très vraisemblable</th><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span></td></tr>
+<tr><th scope="row">V2 — Vraisemblable</th><td class="lv-acceptable level-cell"><span class="note">Acceptable en l&#x27;état</span></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span><strong>R01</strong></td><td class="lv-unacceptable level-cell"><span class="note">Inacceptable</span><strong>R04</strong></td></tr>
+<tr><th scope="row">V1 — Peu vraisemblable</th><td class="lv-acceptable level-cell"><span class="note">Acceptable en l&#x27;état</span></td><td class="lv-acceptable level-cell"><span class="note">Acceptable en l&#x27;état</span></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span><strong>R02</strong></td><td class="lv-tolerable level-cell"><span class="note">Tolérable sous contrôle</span><strong>R03</strong></td></tr>
+</tbody></table></div>
+<p>Chaque case indique son niveau et les risques actifs qui s&#x27;y trouvent.</p>
+<h2>Risques par niveau résiduel</h2>
+<div class="table"><table>
+<thead><tr><th scope="col">ID</th><th scope="col">Risque</th><th scope="col">Responsable</th><th scope="col">Inhérent</th><th scope="col">Résiduel</th><th scope="col">Traitement</th><th scope="col">Prochaine revue</th></tr></thead>
+<tbody>
+<tr><td>R04</td><td>Dépendance à un prestataire de paiement unique</td><td>Camille Roy, responsable du commerce en ligne</td><td class="lv-unacceptable level-cell">Inacceptable</td><td class="lv-unacceptable level-cell">Inacceptable</td><td>Accepter</td><td>01/01/2027</td></tr>
+<tr><td>R01</td><td>Arrêt de l&#x27;activité par un rançongiciel</td><td>Julien Morel, DSI</td><td class="lv-unacceptable level-cell">Inacceptable</td><td class="lv-tolerable level-cell">Tolérable sous contrôle</td><td>Réduire</td><td>15/04/2027</td></tr>
+<tr><td>R02</td><td>Détournement de paiements fournisseurs</td><td>Nadia Ferrand, DAF</td><td class="lv-unacceptable level-cell">Inacceptable</td><td class="lv-tolerable level-cell">Tolérable sous contrôle</td><td>Réduire</td><td>01/04/2027</td></tr>
+<tr><td>R03</td><td>Vol des données clients de la boutique en ligne</td><td>Camille Roy, responsable du commerce en ligne</td><td class="lv-unacceptable level-cell">Inacceptable</td><td class="lv-tolerable level-cell">Tolérable sous contrôle</td><td>Réduire</td><td>15/03/2027</td></tr>
+</tbody></table></div>
+<h2>Au-dessus de l&#x27;appétence</h2>
+<div class="table"><table>
+<thead><tr><th scope="col">ID</th><th scope="col">Risque</th><th scope="col">Résiduel</th><th scope="col">Situation</th></tr></thead>
+<tbody>
+<tr><td>R04</td><td>Dépendance à un prestataire de paiement unique</td><td class="lv-unacceptable level-cell">Inacceptable</td><td>Accepté par Hélène Bastide (Direction générale (homologation)) jusqu&#x27;au 01/04/2027</td></tr>
+<tr><td>R01</td><td>Arrêt de l&#x27;activité par un rançongiciel</td><td class="lv-tolerable level-cell">Tolérable sous contrôle</td><td>Réduction en cours (1 mesure(s) ouverte(s))</td></tr>
+<tr><td>R02</td><td>Détournement de paiements fournisseurs</td><td class="lv-tolerable level-cell">Tolérable sous contrôle</td><td>Accepté par Nadia Ferrand (Responsable du risque, après avis du RSSI) jusqu&#x27;au 01/10/2027</td></tr>
+<tr><td>R03</td><td>Vol des données clients de la boutique en ligne</td><td class="lv-tolerable level-cell">Tolérable sous contrôle</td><td>Réduction en cours (1 mesure(s) ouverte(s))</td></tr>
+</tbody></table></div>
+<h2>Plan d&#x27;action</h2>
+<div class="table"><table>
+<thead><tr><th scope="col">Échéance</th><th scope="col">ID</th><th scope="col">Mesure</th><th scope="col">Responsable</th><th scope="col">État</th></tr></thead>
+<tbody>
+<tr><td>31/12/2026</td><td>R03</td><td>Test d&#x27;intrusion de la boutique et correction des failles trouvées</td><td>Camille Roy</td><td>En cours</td></tr>
+<tr><td>31/01/2027</td><td>R01</td><td>Sauvegardes immuables et isolement du NAS</td><td>Julien Morel, DSI</td><td>En cours</td></tr>
+</tbody></table></div>
+<h2>Calendrier des revues</h2>
+<div class="table"><table>
+<thead><tr><th scope="col">Date</th><th scope="col">ID</th><th scope="col">Risque</th><th scope="col">Résiduel</th></tr></thead>
+<tbody>
+<tr><td>01/01/2027</td><td>R04</td><td>Dépendance à un prestataire de paiement unique</td><td class="lv-unacceptable level-cell">Inacceptable</td></tr>
+<tr><td>15/03/2027</td><td>R03</td><td>Vol des données clients de la boutique en ligne</td><td class="lv-tolerable level-cell">Tolérable sous contrôle</td></tr>
+<tr><td>01/04/2027</td><td>R02</td><td>Détournement de paiements fournisseurs</td><td class="lv-tolerable level-cell">Tolérable sous contrôle</td></tr>
+<tr><td>15/04/2027</td><td>R01</td><td>Arrêt de l&#x27;activité par un rançongiciel</td><td class="lv-tolerable level-cell">Tolérable sous contrôle</td></tr>
+</tbody></table></div>
+<h2>Références</h2>
+<h3>ISO/IEC 27001:2022, annexe A</h3>
+<div class="table"><table>
+<thead><tr><th scope="col">Thème</th><th scope="col">Mesures citées</th></tr></thead>
+<tbody>
+<tr><td>5 — Mesures organisationnelles</td><td>5.14, 5.17, 5.19, 5.21, 5.30</td></tr>
+<tr><td>6 — Mesures liées aux personnes</td><td>6.3</td></tr>
+<tr><td>7 — Mesures physiques</td><td>·</td></tr>
+<tr><td>8 — Mesures technologiques</td><td>8.5, 8.7, 8.8, 8.13, 8.22, 8.26, 8.29</td></tr>
+</tbody></table></div>
+<h3>Playbooks de réponse aux incidents</h3>
+<div class="table"><table>
+<thead><tr><th scope="col">Playbook</th><th scope="col">Risques</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P02-rancongiciel.md" rel="noopener noreferrer">P02 — Attaque par rançongiciel</a></td><td>R01</td></tr>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P03-fuite-de-donnees.md" rel="noopener noreferrer">P03 — Fuite de données</a></td><td>R03</td></tr>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P06-deni-de-service.md" rel="noopener noreferrer">P06 — Déni de service</a></td><td>R04</td></tr>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P07-compte-compromis.md" rel="noopener noreferrer">P07 — Compte compromis et fraude au virement</a></td><td>R02</td></tr>
+</tbody></table></div>
+<h3>Techniques MITRE ATT&amp;CK</h3>
+<div class="table"><table>
+<thead><tr><th scope="col">Technique</th><th scope="col">Risques</th></tr></thead>
+<tbody>
+<tr><td><a href="https://attack.mitre.org/techniques/T1133/" rel="noopener noreferrer">T1133</a></td><td>R01</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1190/" rel="noopener noreferrer">T1190</a></td><td>R03</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1486/" rel="noopener noreferrer">T1486</a></td><td>R01</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1490/" rel="noopener noreferrer">T1490</a></td><td>R01</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1566/" rel="noopener noreferrer">T1566</a></td><td>R02</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1656/" rel="noopener noreferrer">T1656</a></td><td>R02</td></tr>
+</tbody></table></div>
+</main>
+<footer>Généré par risk-assessment-matrix 1.0.0 le 08/11/2026.</footer>
+</body>
+</html>

@@ -1,0 +1,882 @@
+{
+  "schema_version": 1,
+  "generator": "risk-assessment-matrix 1.0.0",
+  "as_of": "2026-11-08",
+  "register": {
+    "organisation": "Atelier Lumen (entreprise fictive)",
+    "lang": "fr",
+    "assessed_on": "2026-09-15",
+    "assessor": "Comité des risques (RSSI, DSI, DAF, DPO)"
+  },
+  "method": {
+    "id": "iso27005-5x5",
+    "name": "Matrice 5×5 — vraisemblance × impact",
+    "references": [
+      "ISO/IEC 27005:2022",
+      "ISO/IEC 27001:2022, 6.1.2"
+    ],
+    "likelihood": {
+      "name": "Vraisemblance",
+      "levels": [
+        {
+          "value": 1,
+          "label": "Rare",
+          "description": "Ne s'est jamais produit ici ; moins d'une fois en dix ans."
+        },
+        {
+          "value": 2,
+          "label": "Peu probable",
+          "description": "Peut se produire, sans signe d'attaque ciblée ; une fois en cinq à dix ans."
+        },
+        {
+          "value": 3,
+          "label": "Possible",
+          "description": "Déjà vu dans le secteur ou tenté ici ; une fois en un à cinq ans."
+        },
+        {
+          "value": 4,
+          "label": "Probable",
+          "description": "Tentatives régulières, mesures incomplètes ; au moins une fois par an."
+        },
+        {
+          "value": 5,
+          "label": "Quasi certain",
+          "description": "En cours ou attendu à court terme ; plusieurs fois par an."
+        }
+      ]
+    },
+    "impact": {
+      "name": "Impact",
+      "levels": [
+        {
+          "value": 1,
+          "label": "Négligeable",
+          "description": "Aucun effet visible sur l'activité ni sur les données."
+        },
+        {
+          "value": 2,
+          "label": "Mineur",
+          "description": "Gêne limitée à une équipe, moins d'une journée ; données internes peu sensibles."
+        },
+        {
+          "value": 3,
+          "label": "Modéré",
+          "description": "Service important dégradé plusieurs jours ou données personnelles exposées en petit nombre."
+        },
+        {
+          "value": 4,
+          "label": "Majeur",
+          "description": "Activité principale interrompue, notification à la CNIL, pertes financières significatives."
+        },
+        {
+          "value": 5,
+          "label": "Critique",
+          "description": "Survie de l'organisation menacée : arrêt prolongé, fuite massive, sanctions lourdes."
+        }
+      ]
+    },
+    "levels": [
+      {
+        "id": "low",
+        "label": "Faible",
+        "color": "#2e7d4f",
+        "review_months": 12,
+        "guidance": "Accepté en l'état ; surveillance lors de la revue annuelle."
+      },
+      {
+        "id": "moderate",
+        "label": "Modéré",
+        "color": "#8a6d00",
+        "review_months": 6,
+        "guidance": "Traitement planifié dans l'année, ou acceptation par le responsable du risque."
+      },
+      {
+        "id": "high",
+        "label": "Élevé",
+        "color": "#b85300",
+        "review_months": 3,
+        "guidance": "Traitement prioritaire sous 3 mois ; acceptation par la direction seulement."
+      },
+      {
+        "id": "critical",
+        "label": "Critique",
+        "color": "#b3261e",
+        "review_months": 1,
+        "guidance": "Traitement immédiat ; acceptation exceptionnelle par la direction générale, de courte durée."
+      }
+    ],
+    "grid": [
+      [
+        "low",
+        "low",
+        "low",
+        "low",
+        "moderate"
+      ],
+      [
+        "low",
+        "low",
+        "moderate",
+        "moderate",
+        "high"
+      ],
+      [
+        "low",
+        "moderate",
+        "moderate",
+        "high",
+        "high"
+      ],
+      [
+        "low",
+        "moderate",
+        "high",
+        "high",
+        "critical"
+      ],
+      [
+        "moderate",
+        "high",
+        "high",
+        "critical",
+        "critical"
+      ]
+    ],
+    "appetite": "low",
+    "authorities": [
+      {
+        "level": "moderate",
+        "by": "Responsable du risque",
+        "max_months": 12
+      },
+      {
+        "level": "high",
+        "by": "Direction",
+        "max_months": 6
+      },
+      {
+        "level": "critical",
+        "by": "Direction générale",
+        "max_months": 3
+      }
+    ]
+  },
+  "risks": [
+    {
+      "id": "R01",
+      "title": "Rançongiciel chiffrant le serveur de fichiers et les sauvegardes",
+      "description": "Un attaquant entre par le VPN avec un mot de passe volé, se déplace jusqu'au serveur de fichiers, puis chiffre les partages et les sauvegardes du NAS, joignable depuis le même réseau.",
+      "category": "Cybersécurité",
+      "owner": "Julien Morel, DSI",
+      "status": "active",
+      "assets": [
+        "Serveur de fichiers",
+        "NAS de sauvegarde",
+        "Annuaire Active Directory"
+      ],
+      "threat": "Groupe criminel diffusant un rançongiciel, avec double extorsion",
+      "vulnerability": "VPN sans authentification multifacteur ; NAS de sauvegarde joignable depuis le réseau bureautique",
+      "gdpr": true,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 4,
+        "impact": 5,
+        "level": "critical"
+      },
+      "existing_controls": [
+        "Antivirus sur les postes et serveurs",
+        "Copie hebdomadaire sur bande, stockée au coffre"
+      ],
+      "measures": [
+        {
+          "title": "Authentification multifacteur sur le VPN",
+          "owner": "Julien Morel, DSI",
+          "due": "2026-10-15",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "8.5",
+              "theme": "Mesures technologiques"
+            }
+          ]
+        },
+        {
+          "title": "Sauvegardes immuables, copie quotidienne hors ligne",
+          "owner": "Julien Morel, DSI",
+          "due": "2026-10-31",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "8.13",
+              "theme": "Mesures technologiques"
+            }
+          ]
+        },
+        {
+          "title": "EDR sur tous les postes et serveurs, supervisé 24 h/24",
+          "owner": "Prestataire d'infogérance",
+          "due": "2026-12-15",
+          "status": "in-progress",
+          "iso27001": [
+            {
+              "id": "8.7",
+              "theme": "Mesures technologiques"
+            },
+            {
+              "id": "8.16",
+              "theme": "Mesures technologiques"
+            }
+          ]
+        },
+        {
+          "title": "Isoler le NAS de sauvegarde dans un réseau dédié",
+          "owner": "Julien Morel, DSI",
+          "due": "2027-01-31",
+          "status": "planned",
+          "iso27001": [
+            {
+              "id": "8.22",
+              "theme": "Mesures technologiques"
+            }
+          ]
+        }
+      ],
+      "residual": {
+        "likelihood": 3,
+        "impact": 4,
+        "level": "high",
+        "justification": ""
+      },
+      "treatment": "reduce",
+      "transfer_to": "",
+      "acceptance": null,
+      "review": {
+        "last": "2026-10-15",
+        "next": "2027-01-15"
+      },
+      "history": [
+        {
+          "on": "2026-09-15",
+          "by": "Comité des risques",
+          "change": "Création du risque après l'exercice sur table : NAS joignable et VPN sans MFA."
+        },
+        {
+          "on": "2026-10-15",
+          "by": "Julien Morel",
+          "change": "MFA en service sur le VPN ; vraisemblance résiduelle ramenée de 4 à 3."
+        }
+      ],
+      "iso27001": [
+        {
+          "id": "5.17",
+          "theme": "Mesures organisationnelles"
+        },
+        {
+          "id": "8.7",
+          "theme": "Mesures technologiques"
+        },
+        {
+          "id": "8.13",
+          "theme": "Mesures technologiques"
+        },
+        {
+          "id": "8.22",
+          "theme": "Mesures technologiques"
+        }
+      ],
+      "attack": [
+        {
+          "id": "T1133",
+          "url": "https://attack.mitre.org/techniques/T1133/"
+        },
+        {
+          "id": "T1078",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        },
+        {
+          "id": "T1486",
+          "url": "https://attack.mitre.org/techniques/T1486/"
+        },
+        {
+          "id": "T1490",
+          "url": "https://attack.mitre.org/techniques/T1490/"
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "P02",
+          "title": "Attaque par rançongiciel",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P02-rancongiciel.md"
+        },
+        {
+          "id": "P01",
+          "title": "Infection par logiciel malveillant",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P01-logiciel-malveillant.md"
+        }
+      ]
+    },
+    {
+      "id": "R02",
+      "title": "Fraude au virement par usurpation d'un fournisseur",
+      "description": "Un fraudeur se fait passer pour un fournisseur et obtient le changement de ses coordonnées bancaires ; les paiements suivants partent vers son compte.",
+      "category": "Fraude",
+      "owner": "Nadia Ferrand, DAF",
+      "status": "active",
+      "assets": [
+        "Processus de paiement des fournisseurs",
+        "Messagerie de la comptabilité"
+      ],
+      "threat": "Fraudeur pratiquant la fraude aux faux fournisseurs",
+      "vulnerability": "Changement de coordonnées bancaires accepté sur simple courriel",
+      "gdpr": false,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 4,
+        "impact": 4,
+        "level": "high"
+      },
+      "existing_controls": [
+        "Double signature des virements de plus de 10 000 €"
+      ],
+      "measures": [
+        {
+          "title": "Contre-appel obligatoire, sur un numéro déjà connu, avant tout changement de coordonnées bancaires",
+          "owner": "Nadia Ferrand, DAF",
+          "due": "2026-09-30",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "5.14",
+              "theme": "Mesures organisationnelles"
+            }
+          ]
+        },
+        {
+          "title": "Formation de la comptabilité aux fraudes au virement",
+          "owner": "Responsable des ressources humaines",
+          "due": "2026-09-30",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "6.3",
+              "theme": "Mesures liées aux personnes"
+            }
+          ]
+        }
+      ],
+      "residual": {
+        "likelihood": 2,
+        "impact": 4,
+        "level": "moderate",
+        "justification": ""
+      },
+      "treatment": "reduce",
+      "transfer_to": "",
+      "acceptance": {
+        "by": "Nadia Ferrand",
+        "role": "Responsable du risque",
+        "on": "2026-10-01",
+        "until": "2027-10-01",
+        "rationale": "Le contre-appel systématique et la formation ramènent la vraisemblance à 2 ; l'impact reste majeur, mais un contrôle supplémentaire n'est pas proportionné aujourd'hui."
+      },
+      "review": {
+        "last": "2026-09-15",
+        "next": "2027-03-15"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "5.14",
+          "theme": "Mesures organisationnelles"
+        },
+        {
+          "id": "6.3",
+          "theme": "Mesures liées aux personnes"
+        }
+      ],
+      "attack": [
+        {
+          "id": "T1566",
+          "url": "https://attack.mitre.org/techniques/T1566/"
+        },
+        {
+          "id": "T1656",
+          "url": "https://attack.mitre.org/techniques/T1656/"
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "P07",
+          "title": "Compte compromis et fraude au virement",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P07-compte-compromis.md"
+        },
+        {
+          "id": "P04",
+          "title": "Hameçonnage",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P04-hameconnage.md"
+        }
+      ]
+    },
+    {
+      "id": "R03",
+      "title": "Fuite des données clients de la boutique en ligne",
+      "description": "Une faille de l'application de la boutique permet d'extraire les comptes clients (identité, adresses, historique de commandes).",
+      "category": "Protection des données",
+      "owner": "Camille Roy, responsable du commerce en ligne",
+      "status": "active",
+      "assets": [
+        "Boutique en ligne",
+        "Base de données clients"
+      ],
+      "threat": "Attaquant exploitant les applications web exposées",
+      "vulnerability": "Extensions de la boutique rarement mises à jour ; pas de test d'intrusion depuis deux ans",
+      "gdpr": true,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 3,
+        "impact": 4,
+        "level": "high"
+      },
+      "existing_controls": [
+        "Hébergement chez un prestataire certifié",
+        "Paiement délégué à un prestataire de paiement"
+      ],
+      "measures": [
+        {
+          "title": "Pare-feu applicatif (WAF) devant la boutique",
+          "owner": "Camille Roy",
+          "due": "2026-10-15",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "8.20",
+              "theme": "Mesures technologiques"
+            }
+          ]
+        },
+        {
+          "title": "Test d'intrusion de la boutique et correction des failles trouvées",
+          "owner": "Camille Roy",
+          "due": "2026-10-31",
+          "status": "in-progress",
+          "iso27001": [
+            {
+              "id": "8.8",
+              "theme": "Mesures technologiques"
+            },
+            {
+              "id": "8.29",
+              "theme": "Mesures technologiques"
+            }
+          ]
+        }
+      ],
+      "residual": {
+        "likelihood": 2,
+        "impact": 4,
+        "level": "moderate",
+        "justification": ""
+      },
+      "treatment": "reduce",
+      "transfer_to": "",
+      "acceptance": null,
+      "review": {
+        "last": "2026-09-15",
+        "next": "2027-03-15"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "8.8",
+          "theme": "Mesures technologiques"
+        },
+        {
+          "id": "8.26",
+          "theme": "Mesures technologiques"
+        },
+        {
+          "id": "8.28",
+          "theme": "Mesures technologiques"
+        }
+      ],
+      "attack": [
+        {
+          "id": "T1190",
+          "url": "https://attack.mitre.org/techniques/T1190/"
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "P03",
+          "title": "Fuite de données",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P03-fuite-de-donnees.md"
+        }
+      ]
+    },
+    {
+      "id": "R04",
+      "title": "Compromission de comptes Microsoft 365 par hameçonnage",
+      "description": "Un salarié saisit son mot de passe sur une fausse page de connexion ; l'attaquant lit sa messagerie et s'en sert pour hameçonner clients et collègues.",
+      "category": "Cybersécurité",
+      "owner": "Julien Morel, DSI",
+      "status": "active",
+      "assets": [
+        "Microsoft 365 (messagerie, OneDrive, Teams)"
+      ],
+      "threat": "Campagnes d'hameçonnage visant les identifiants",
+      "vulnerability": "Authentification multifacteur non imposée à tous les comptes",
+      "gdpr": true,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 4,
+        "impact": 3,
+        "level": "high"
+      },
+      "existing_controls": [
+        "Filtrage antispam de Microsoft 365"
+      ],
+      "measures": [
+        {
+          "title": "MFA imposée à tous les comptes, sans exception",
+          "owner": "Julien Morel, DSI",
+          "due": "2026-09-30",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "8.5",
+              "theme": "Mesures technologiques"
+            }
+          ]
+        },
+        {
+          "title": "Accès conditionnel : connexions autorisées depuis les appareils gérés seulement",
+          "owner": "Julien Morel, DSI",
+          "due": "2026-09-30",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "5.15",
+              "theme": "Mesures organisationnelles"
+            }
+          ]
+        }
+      ],
+      "residual": {
+        "likelihood": 2,
+        "impact": 3,
+        "level": "moderate",
+        "justification": ""
+      },
+      "treatment": "reduce",
+      "transfer_to": "",
+      "acceptance": {
+        "by": "Julien Morel",
+        "role": "Responsable du risque",
+        "on": "2026-10-01",
+        "until": "2027-10-01",
+        "rationale": "MFA imposée et accès conditionnel en place ; le risque résiduel tient à l'hameçonnage de session, suivi par la supervision."
+      },
+      "review": {
+        "last": "2026-10-01",
+        "next": "2027-04-01"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "5.17",
+          "theme": "Mesures organisationnelles"
+        },
+        {
+          "id": "8.5",
+          "theme": "Mesures technologiques"
+        }
+      ],
+      "attack": [
+        {
+          "id": "T1566.002",
+          "url": "https://attack.mitre.org/techniques/T1566/002/"
+        },
+        {
+          "id": "T1078.004",
+          "url": "https://attack.mitre.org/techniques/T1078/004/"
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "P07",
+          "title": "Compte compromis et fraude au virement",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P07-compte-compromis.md"
+        },
+        {
+          "id": "P04",
+          "title": "Hameçonnage",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P04-hameconnage.md"
+        }
+      ]
+    },
+    {
+      "id": "R05",
+      "title": "Indisponibilité prolongée de la boutique en ligne",
+      "description": "Panne de l'hébergeur ou attaque par déni de service pendant une période commerciale forte (soldes, fin d'année).",
+      "category": "Continuité d'activité",
+      "owner": "Camille Roy, responsable du commerce en ligne",
+      "status": "active",
+      "assets": [
+        "Boutique en ligne"
+      ],
+      "threat": "Panne d'un prestataire ; attaque par déni de service",
+      "vulnerability": "Hébergeur unique, sans site de secours",
+      "gdpr": false,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 3,
+        "impact": 3,
+        "level": "moderate"
+      },
+      "existing_controls": [],
+      "measures": [],
+      "residual": {
+        "likelihood": 3,
+        "impact": 2,
+        "level": "moderate",
+        "justification": ""
+      },
+      "treatment": "transfer",
+      "transfer_to": "Hébergeur (engagement de disponibilité avec pénalités) et assureur cyber (perte d'exploitation)",
+      "acceptance": {
+        "by": "Camille Roy",
+        "role": "Responsable du risque",
+        "on": "2026-09-15",
+        "until": "2027-09-15",
+        "rationale": "Les pertes financières sont couvertes par le contrat et l'assurance ; un site de secours coûterait plus que le risque restant."
+      },
+      "review": {
+        "last": "2026-09-15",
+        "next": "2027-03-15"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "5.20",
+          "theme": "Mesures organisationnelles"
+        },
+        {
+          "id": "5.23",
+          "theme": "Mesures organisationnelles"
+        },
+        {
+          "id": "5.30",
+          "theme": "Mesures organisationnelles"
+        }
+      ],
+      "attack": [
+        {
+          "id": "T1498",
+          "url": "https://attack.mitre.org/techniques/T1498/"
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "P06",
+          "title": "Déni de service",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P06-deni-de-service.md"
+        }
+      ]
+    },
+    {
+      "id": "R06",
+      "title": "Vol ou perte d'un ordinateur portable",
+      "description": "Un commercial se fait voler son portable en déplacement ; les fichiers clients qu'il contient sont exposés.",
+      "category": "Matériel",
+      "owner": "Julien Morel, DSI",
+      "status": "active",
+      "assets": [
+        "Ordinateurs portables des commerciaux"
+      ],
+      "threat": "Vol opportuniste",
+      "vulnerability": "Usage nomade fréquent",
+      "gdpr": true,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 3,
+        "impact": 3,
+        "level": "moderate"
+      },
+      "existing_controls": [],
+      "measures": [
+        {
+          "title": "Chiffrement intégral des disques (BitLocker) et effacement à distance",
+          "owner": "Julien Morel, DSI",
+          "due": "2026-09-15",
+          "status": "done",
+          "iso27001": [
+            {
+              "id": "8.24",
+              "theme": "Mesures technologiques"
+            }
+          ]
+        }
+      ],
+      "residual": {
+        "likelihood": 3,
+        "impact": 1,
+        "level": "low",
+        "justification": ""
+      },
+      "treatment": "reduce",
+      "transfer_to": "",
+      "acceptance": null,
+      "review": {
+        "last": "2026-09-15",
+        "next": "2027-09-15"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "7.9",
+          "theme": "Mesures physiques"
+        },
+        {
+          "id": "8.1",
+          "theme": "Mesures technologiques"
+        },
+        {
+          "id": "8.24",
+          "theme": "Mesures technologiques"
+        }
+      ],
+      "attack": [],
+      "playbooks": []
+    },
+    {
+      "id": "R07",
+      "title": "Accès conservés après un départ ou la fin d'un contrat de prestation",
+      "description": "Un ancien salarié ou un ancien prestataire garde un compte actif, parfois à privilèges, et s'en sert ou se le fait voler.",
+      "category": "Gestion des accès",
+      "owner": "Responsable des ressources humaines",
+      "status": "active",
+      "assets": [
+        "Annuaire Active Directory",
+        "Microsoft 365",
+        "VPN"
+      ],
+      "threat": "Ancien salarié ou prestataire malveillant ; vol d'un compte dormant",
+      "vulnerability": "Pas de procédure de départ commune aux ressources humaines et à l'informatique",
+      "gdpr": false,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 2,
+        "impact": 4,
+        "level": "moderate"
+      },
+      "existing_controls": [],
+      "measures": [
+        {
+          "title": "Procédure de départ commune RH / informatique et revue trimestrielle des comptes",
+          "owner": "Responsable des ressources humaines",
+          "due": "2027-03-31",
+          "status": "planned",
+          "iso27001": [
+            {
+              "id": "5.18",
+              "theme": "Mesures organisationnelles"
+            },
+            {
+              "id": "6.5",
+              "theme": "Mesures liées aux personnes"
+            }
+          ]
+        }
+      ],
+      "residual": {
+        "likelihood": 1,
+        "impact": 4,
+        "level": "low",
+        "justification": ""
+      },
+      "treatment": "reduce",
+      "transfer_to": "",
+      "acceptance": null,
+      "review": {
+        "last": "2026-09-15",
+        "next": "2027-09-15"
+      },
+      "history": [],
+      "iso27001": [
+        {
+          "id": "5.18",
+          "theme": "Mesures organisationnelles"
+        },
+        {
+          "id": "6.5",
+          "theme": "Mesures liées aux personnes"
+        },
+        {
+          "id": "8.2",
+          "theme": "Mesures technologiques"
+        }
+      ],
+      "attack": [
+        {
+          "id": "T1078",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "playbooks": [
+        {
+          "id": "P05",
+          "title": "Accès non autorisé",
+          "url": "https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P05-acces-non-autorise.md"
+        }
+      ]
+    },
+    {
+      "id": "R08",
+      "title": "Sinistre dans la salle serveur de l'entrepôt",
+      "description": "Un dégât des eaux ou un incendie détruit les serveurs de l'ancienne application logistique, hébergée à l'entrepôt.",
+      "category": "Sécurité physique",
+      "owner": "Julien Morel, DSI",
+      "status": "closed",
+      "assets": [
+        "Ancienne application logistique"
+      ],
+      "threat": "Dégât des eaux, incendie",
+      "vulnerability": "Local technique sans détection d'incendie, sous une toiture fragile",
+      "gdpr": false,
+      "nis2": false,
+      "inherent": {
+        "likelihood": 2,
+        "impact": 4,
+        "level": "moderate"
+      },
+      "existing_controls": [],
+      "measures": [],
+      "residual": {
+        "likelihood": 1,
+        "impact": 1,
+        "level": "low",
+        "justification": ""
+      },
+      "treatment": "avoid",
+      "transfer_to": "",
+      "acceptance": null,
+      "review": {
+        "last": "2026-06-30",
+        "next": "2027-06-30"
+      },
+      "history": [
+        {
+          "on": "2026-06-30",
+          "by": "Julien Morel",
+          "change": "Application logistique migrée chez un éditeur en mode SaaS ; serveurs de l'entrepôt retirés. Risque clos."
+        }
+      ],
+      "iso27001": [],
+      "attack": [],
+      "playbooks": []
+    }
+  ],
+  "warnings": [
+    "R03.measures[1] : mesure en retard (échéance 2026-10-31) — « Test d'intrusion de la boutique et correction des failles trouvées »"
+  ]
+}

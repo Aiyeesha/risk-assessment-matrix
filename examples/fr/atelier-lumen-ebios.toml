@@ -1,0 +1,129 @@
+# ─────────────────────────────────────────────────────────────
+# Registre d'exemple — Atelier Lumen (ENTREPRISE FICTIVE), méthode EBIOS Risk Manager 4×4
+#
+# Même entreprise que atelier-lumen.toml, vue avec les échelles d'EBIOS RM : vraisemblance V1–V4,
+# gravité G1–G4 et grille d'acceptation à trois zones. Chaque risque correspond à un scénario
+# stratégique de l'atelier 3 : « source de risque → objectif visé », puis le chemin d'attaque.
+# R04 montre le cas le plus exigeant : un risque « inacceptable » accepté en connaissance de cause
+# par la direction générale (homologation), pour six mois au plus.
+# ─────────────────────────────────────────────────────────────
+kind = "register"
+format = 1
+method = "ebios-rm-4x4"
+lang = "fr"
+organisation = "Atelier Lumen (entreprise fictive)"
+assessed_on = 2026-09-15
+assessor = "Comité des risques (RSSI, DSI, DAF, DPO)"
+
+[[risks]]
+id = "R01"
+title = "Arrêt de l'activité par un rançongiciel"
+description = "Scénario stratégique : un groupe criminel cherche un gain financier en paralysant l'entreprise. Chemin d'attaque : VPN sans MFA, compte volé, serveur de fichiers, sauvegardes du NAS."
+category = "Scénario stratégique — cybercriminalité"
+owner = "Julien Morel, DSI"
+assets = ["Valeur métier : préparation et expédition des commandes", "Serveur de fichiers", "NAS de sauvegarde"]
+threat = "Source de risque : groupe cybercriminel — objectif visé : rançon et revente des données"
+vulnerability = "VPN sans authentification multifacteur ; sauvegardes joignables depuis le réseau bureautique"
+gdpr = true
+nis2 = false
+inherent = { likelihood = 3, impact = 4 }
+existing_controls = ["Antivirus", "Copie hebdomadaire sur bande"]
+residual = { likelihood = 2, impact = 3 }
+treatment = "reduce"
+review = { last = 2026-10-15, next = 2027-04-15 }
+iso27001 = ["5.17", "8.7", "8.13", "8.22"]
+attack = ["T1133", "T1486", "T1490"]
+playbooks = ["P02"]
+
+[[risks.measures]]
+title = "Authentification multifacteur sur le VPN"
+owner = "Julien Morel, DSI"
+due = 2026-10-15
+status = "done"
+iso27001 = ["8.5"]
+
+[[risks.measures]]
+title = "Sauvegardes immuables et isolement du NAS"
+owner = "Julien Morel, DSI"
+due = 2027-01-31
+status = "in-progress"
+iso27001 = ["8.13", "8.22"]
+
+[[risks]]
+id = "R02"
+title = "Détournement de paiements fournisseurs"
+description = "Scénario stratégique : un fraudeur cherche à détourner des fonds en se faisant passer pour un fournisseur auprès de la comptabilité."
+category = "Scénario stratégique — fraude"
+owner = "Nadia Ferrand, DAF"
+assets = ["Valeur métier : paiement des fournisseurs"]
+threat = "Source de risque : fraudeur — objectif visé : gain financier"
+vulnerability = "Changement de coordonnées bancaires accepté sur simple courriel"
+gdpr = false
+nis2 = false
+inherent = { likelihood = 3, impact = 3 }
+residual = { likelihood = 1, impact = 3 }
+treatment = "reduce"
+review = { last = 2026-10-01, next = 2027-04-01 }
+acceptance = { by = "Nadia Ferrand", role = "Responsable du risque, après avis du RSSI", on = 2026-10-01, until = 2027-10-01, rationale = "Contre-appel systématique et formation en place ; avis favorable du RSSI du 30 septembre 2026." }
+iso27001 = ["5.14", "6.3"]
+attack = ["T1566", "T1656"]
+playbooks = ["P07"]
+
+[[risks.measures]]
+title = "Contre-appel obligatoire avant tout changement de coordonnées bancaires"
+owner = "Nadia Ferrand, DAF"
+due = 2026-09-30
+status = "done"
+iso27001 = ["5.14"]
+
+[[risks.measures]]
+title = "Formation de la comptabilité aux fraudes au virement"
+owner = "Responsable des ressources humaines"
+due = 2026-09-30
+status = "done"
+iso27001 = ["6.3"]
+
+[[risks]]
+id = "R03"
+title = "Vol des données clients de la boutique en ligne"
+description = "Scénario stratégique : un attaquant cherche à revendre les données des clients en exploitant une faille de la boutique en ligne."
+category = "Scénario stratégique — vol de données"
+owner = "Camille Roy, responsable du commerce en ligne"
+assets = ["Valeur métier : relation client", "Boutique en ligne", "Base de données clients"]
+threat = "Source de risque : attaquant opportuniste — objectif visé : revente de données"
+vulnerability = "Extensions rarement mises à jour ; pas de test d'intrusion récent"
+gdpr = true
+nis2 = false
+inherent = { likelihood = 2, impact = 4 }
+residual = { likelihood = 1, impact = 4 }
+treatment = "reduce"
+review = { last = 2026-09-15, next = 2027-03-15 }
+iso27001 = ["8.8", "8.26"]
+attack = ["T1190"]
+playbooks = ["P03"]
+
+[[risks.measures]]
+title = "Test d'intrusion de la boutique et correction des failles trouvées"
+owner = "Camille Roy"
+due = 2026-12-31
+status = "in-progress"
+iso27001 = ["8.8", "8.29"]
+
+[[risks]]
+id = "R04"
+title = "Dépendance à un prestataire de paiement unique"
+description = "Scénario stratégique : la compromission ou la défaillance du prestataire de paiement bloque toutes les ventes en ligne, sans solution de repli."
+category = "Scénario stratégique — écosystème"
+owner = "Camille Roy, responsable du commerce en ligne"
+assets = ["Valeur métier : vente en ligne"]
+threat = "Source de risque : attaquant visant le prestataire — objectif visé : atteindre ses clients"
+vulnerability = "Un seul prestataire de paiement, intégré en profondeur dans la boutique"
+gdpr = false
+nis2 = false
+inherent = { likelihood = 2, impact = 4 }
+residual = { likelihood = 2, impact = 4 }
+treatment = "accept"
+review = { last = 2026-10-01, next = 2027-01-01 }
+acceptance = { by = "Hélène Bastide", role = "Direction générale (homologation)", on = 2026-10-01, until = 2027-04-01, rationale = "Un second prestataire ne peut être intégré avant la refonte de la boutique, prévue au printemps 2027 ; risque accepté jusque-là et revu chaque trimestre." }
+iso27001 = ["5.19", "5.21", "5.30"]
+playbooks = ["P06"]

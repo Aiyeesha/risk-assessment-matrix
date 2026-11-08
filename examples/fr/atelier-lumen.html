@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'sha256-vqXMjZ0fQmvOmos8uM84WghEZSkBNAsTqPpIUUYKZXw='; img-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rapport de risques — Atelier Lumen (entreprise fictive)</title>
+<style>:root { color-scheme: light dark; --fg: #1b1b1f; --bg: #ffffff; --muted: #5d5f66; --line: #d9dadf; --late: #b3261e; }
+@media (prefers-color-scheme: dark) {
+  :root { --fg: #e6e6ea; --bg: #16171b; --muted: #a5a7ae; --line: #3a3c43; --late: #ff8a80; }
+}
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 72rem; padding: 2rem 1rem; font: 15px/1.5 system-ui, -apple-system, "Segoe UI",
+  Roboto, sans-serif; color: var(--fg); background: var(--bg); }
+h1 { font-size: 1.6rem; margin: 0 0 .5rem; }
+h2 { font-size: 1.2rem; margin: 2rem 0 .6rem; padding-bottom: .2rem; border-bottom: 2px solid var(--line); }
+h3 { font-size: 1rem; margin: 1.2rem 0 .4rem; }
+.meta { list-style: none; padding: 0; margin: 0; color: var(--muted); }
+.table { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; margin: .4rem 0 1rem; }
+th, td { border: 1px solid var(--line); padding: .35rem .5rem; text-align: left; vertical-align: top; }
+th { font-weight: 600; }
+.heat td { text-align: center; min-width: 6rem; }
+.heat th[scope="row"] { white-space: nowrap; }
+.note { display: block; font-size: .75rem; opacity: .9; }
+.level { font-weight: 600; }
+.late { color: var(--late); font-weight: 700; }
+a { color: inherit; }
+footer { margin-top: 2.5rem; color: var(--muted); font-size: .85rem; }
+@media print {
+  body { max-width: none; padding: 0; font-size: 11px; }
+  h2 { break-after: avoid; }
+  table, tr { break-inside: avoid; }
+  a { text-decoration: none; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+@page { size: A4 landscape; margin: 12mm; }
+.lv-low { background: #2e7d4f; color: #ffffff; }
+.lv-moderate { background: #8a6d00; color: #ffffff; }
+.lv-high { background: #b85300; color: #ffffff; }
+.lv-critical { background: #b3261e; color: #ffffff; }</style>
+</head>
+<body>
+<header>
+<h1>Rapport de risques — Atelier Lumen (entreprise fictive)</h1>
+<ul class="meta"><li>Méthode : Matrice 5×5 — vraisemblance × impact</li><li>Évaluation : 15/09/2026, par Comité des risques (RSSI, DSI, DAF, DPO)</li><li>Situation au : 08/11/2026</li></ul>
+</header>
+<main>
+<h2>Synthèse</h2>
+<ul><li>7 risque(s) actif(s), 1 clos</li><li>5 au-dessus de l&#x27;appétence (« Faible »)</li><li>4 mesure(s) ouverte(s), dont 1 en retard</li><li>1 avertissement(s) à traiter</li></ul>
+<div class="table"><table>
+<thead><tr><th scope="col">Niveau résiduel</th><th scope="col">Risques</th></tr></thead>
+<tbody>
+<tr><td class="lv-critical level-cell">Critique</td><td>0</td></tr>
+<tr><td class="lv-high level-cell">Élevé</td><td>1</td></tr>
+<tr><td class="lv-moderate level-cell">Modéré</td><td>4</td></tr>
+<tr><td class="lv-low level-cell">Faible</td><td>2</td></tr>
+</tbody></table></div>
+<h2>Cartographie — risque inhérent</h2>
+<div class="table"><table class="heat">
+<thead><tr><th scope="col">Vraisemblance ↓ / Impact →</th><th scope="col">Négligeable</th><th scope="col">Mineur</th><th scope="col">Modéré</th><th scope="col">Majeur</th><th scope="col">Critique</th></tr></thead>
+<tbody>
+<tr><th scope="row">Quasi certain</th><td class="lv-moderate level-cell"><span class="note">Modéré</span></td><td class="lv-high level-cell"><span class="note">Élevé</span></td><td class="lv-high level-cell"><span class="note">Élevé</span></td><td class="lv-critical level-cell"><span class="note">Critique</span></td><td class="lv-critical level-cell"><span class="note">Critique</span></td></tr>
+<tr><th scope="row">Probable</th><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-moderate level-cell"><span class="note">Modéré</span></td><td class="lv-high level-cell"><span class="note">Élevé</span><strong>R04</strong></td><td class="lv-high level-cell"><span class="note">Élevé</span><strong>R02</strong></td><td class="lv-critical level-cell"><span class="note">Critique</span><strong>R01</strong></td></tr>
+<tr><th scope="row">Possible</th><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-moderate level-cell"><span class="note">Modéré</span></td><td class="lv-moderate level-cell"><span class="note">Modéré</span><strong>R05, R06</strong></td><td class="lv-high level-cell"><span class="note">Élevé</span><strong>R03</strong></td><td class="lv-high level-cell"><span class="note">Élevé</span></td></tr>
+<tr><th scope="row">Peu probable</th><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-moderate level-cell"><span class="note">Modéré</span></td><td class="lv-moderate level-cell"><span class="note">Modéré</span><strong>R07</strong></td><td class="lv-high level-cell"><span class="note">Élevé</span></td></tr>
+<tr><th scope="row">Rare</th><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-moderate level-cell"><span class="note">Modéré</span></td></tr>
+</tbody></table></div>
+<h2>Cartographie — risque résiduel</h2>
+<div class="table"><table class="heat">
+<thead><tr><th scope="col">Vraisemblance ↓ / Impact →</th><th scope="col">Négligeable</th><th scope="col">Mineur</th><th scope="col">Modéré</th><th scope="col">Majeur</th><th scope="col">Critique</th></tr></thead>
+<tbody>
+<tr><th scope="row">Quasi certain</th><td class="lv-moderate level-cell"><span class="note">Modéré</span></td><td class="lv-high level-cell"><span class="note">Élevé</span></td><td class="lv-high level-cell"><span class="note">Élevé</span></td><td class="lv-critical level-cell"><span class="note">Critique</span></td><td class="lv-critical level-cell"><span class="note">Critique</span></td></tr>
+<tr><th scope="row">Probable</th><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-moderate level-cell"><span class="note">Modéré</span></td><td class="lv-high level-cell"><span class="note">Élevé</span></td><td class="lv-high level-cell"><span class="note">Élevé</span></td><td class="lv-critical level-cell"><span class="note">Critique</span></td></tr>
+<tr><th scope="row">Possible</th><td class="lv-low level-cell"><span class="note">Faible</span><strong>R06</strong></td><td class="lv-moderate level-cell"><span class="note">Modéré</span><strong>R05</strong></td><td class="lv-moderate level-cell"><span class="note">Modéré</span></td><td class="lv-high level-cell"><span class="note">Élevé</span><strong>R01</strong></td><td class="lv-high level-cell"><span class="note">Élevé</span></td></tr>
+<tr><th scope="row">Peu probable</th><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-moderate level-cell"><span class="note">Modéré</span><strong>R04</strong></td><td class="lv-moderate level-cell"><span class="note">Modéré</span><strong>R02, R03</strong></td><td class="lv-high level-cell"><span class="note">Élevé</span></td></tr>
+<tr><th scope="row">Rare</th><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-low level-cell"><span class="note">Faible</span></td><td class="lv-low level-cell"><span class="note">Faible</span><strong>R07</strong></td><td class="lv-moderate level-cell"><span class="note">Modéré</span></td></tr>
+</tbody></table></div>
+<p>Chaque case indique son niveau et les risques actifs qui s&#x27;y trouvent.</p>
+<h2>Risques par niveau résiduel</h2>
+<div class="table"><table>
+<thead><tr><th scope="col">ID</th><th scope="col">Risque</th><th scope="col">Responsable</th><th scope="col">Inhérent</th><th scope="col">Résiduel</th><th scope="col">Traitement</th><th scope="col">Prochaine revue</th></tr></thead>
+<tbody>
+<tr><td>R01</td><td>Rançongiciel chiffrant le serveur de fichiers et les sauvegardes</td><td>Julien Morel, DSI</td><td class="lv-critical level-cell">Critique</td><td class="lv-high level-cell">Élevé</td><td>Réduire</td><td>15/01/2027</td></tr>
+<tr><td>R02</td><td>Fraude au virement par usurpation d&#x27;un fournisseur</td><td>Nadia Ferrand, DAF</td><td class="lv-high level-cell">Élevé</td><td class="lv-moderate level-cell">Modéré</td><td>Réduire</td><td>15/03/2027</td></tr>
+<tr><td>R03</td><td>Fuite des données clients de la boutique en ligne</td><td>Camille Roy, responsable du commerce en ligne</td><td class="lv-high level-cell">Élevé</td><td class="lv-moderate level-cell">Modéré</td><td>Réduire</td><td>15/03/2027</td></tr>
+<tr><td>R04</td><td>Compromission de comptes Microsoft 365 par hameçonnage</td><td>Julien Morel, DSI</td><td class="lv-high level-cell">Élevé</td><td class="lv-moderate level-cell">Modéré</td><td>Réduire</td><td>01/04/2027</td></tr>
+<tr><td>R05</td><td>Indisponibilité prolongée de la boutique en ligne</td><td>Camille Roy, responsable du commerce en ligne</td><td class="lv-moderate level-cell">Modéré</td><td class="lv-moderate level-cell">Modéré</td><td>Transférer</td><td>15/03/2027</td></tr>
+<tr><td>R06</td><td>Vol ou perte d&#x27;un ordinateur portable</td><td>Julien Morel, DSI</td><td class="lv-moderate level-cell">Modéré</td><td class="lv-low level-cell">Faible</td><td>Réduire</td><td>15/09/2027</td></tr>
+<tr><td>R07</td><td>Accès conservés après un départ ou la fin d&#x27;un contrat de prestation</td><td>Responsable des ressources humaines</td><td class="lv-moderate level-cell">Modéré</td><td class="lv-low level-cell">Faible</td><td>Réduire</td><td>15/09/2027</td></tr>
+</tbody></table></div>
+<h2>Au-dessus de l&#x27;appétence</h2>
+<div class="table"><table>
+<thead><tr><th scope="col">ID</th><th scope="col">Risque</th><th scope="col">Résiduel</th><th scope="col">Situation</th></tr></thead>
+<tbody>
+<tr><td>R01</td><td>Rançongiciel chiffrant le serveur de fichiers et les sauvegardes</td><td class="lv-high level-cell">Élevé</td><td>Réduction en cours (2 mesure(s) ouverte(s))</td></tr>
+<tr><td>R02</td><td>Fraude au virement par usurpation d&#x27;un fournisseur</td><td class="lv-moderate level-cell">Modéré</td><td>Accepté par Nadia Ferrand (Responsable du risque) jusqu&#x27;au 01/10/2027</td></tr>
+<tr><td>R03</td><td>Fuite des données clients de la boutique en ligne</td><td class="lv-moderate level-cell">Modéré</td><td>Réduction en cours (1 mesure(s) ouverte(s))</td></tr>
+<tr><td>R04</td><td>Compromission de comptes Microsoft 365 par hameçonnage</td><td class="lv-moderate level-cell">Modéré</td><td>Accepté par Julien Morel (Responsable du risque) jusqu&#x27;au 01/10/2027</td></tr>
+<tr><td>R05</td><td>Indisponibilité prolongée de la boutique en ligne</td><td class="lv-moderate level-cell">Modéré</td><td>Accepté par Camille Roy (Responsable du risque) jusqu&#x27;au 15/09/2027</td></tr>
+</tbody></table></div>
+<h2>Plan d&#x27;action</h2>
+<div class="table"><table>
+<thead><tr><th scope="col">Échéance</th><th scope="col">ID</th><th scope="col">Mesure</th><th scope="col">Responsable</th><th scope="col">État</th></tr></thead>
+<tbody>
+<tr><td><span class="late">31/10/2026</span></td><td>R03</td><td>Test d&#x27;intrusion de la boutique et correction des failles trouvées</td><td>Camille Roy</td><td><span class="late">En retard</span></td></tr>
+<tr><td>15/12/2026</td><td>R01</td><td>EDR sur tous les postes et serveurs, supervisé 24 h/24</td><td>Prestataire d&#x27;infogérance</td><td>En cours</td></tr>
+<tr><td>31/01/2027</td><td>R01</td><td>Isoler le NAS de sauvegarde dans un réseau dédié</td><td>Julien Morel, DSI</td><td>Prévue</td></tr>
+<tr><td>31/03/2027</td><td>R07</td><td>Procédure de départ commune RH / informatique et revue trimestrielle des comptes</td><td>Responsable des ressources humaines</td><td>Prévue</td></tr>
+</tbody></table></div>
+<h2>Calendrier des revues</h2>
+<div class="table"><table>
+<thead><tr><th scope="col">Date</th><th scope="col">ID</th><th scope="col">Risque</th><th scope="col">Résiduel</th></tr></thead>
+<tbody>
+<tr><td>15/01/2027</td><td>R01</td><td>Rançongiciel chiffrant le serveur de fichiers et les sauvegardes</td><td class="lv-high level-cell">Élevé</td></tr>
+<tr><td>15/03/2027</td><td>R02</td><td>Fraude au virement par usurpation d&#x27;un fournisseur</td><td class="lv-moderate level-cell">Modéré</td></tr>
+<tr><td>15/03/2027</td><td>R03</td><td>Fuite des données clients de la boutique en ligne</td><td class="lv-moderate level-cell">Modéré</td></tr>
+<tr><td>15/03/2027</td><td>R05</td><td>Indisponibilité prolongée de la boutique en ligne</td><td class="lv-moderate level-cell">Modéré</td></tr>
+<tr><td>01/04/2027</td><td>R04</td><td>Compromission de comptes Microsoft 365 par hameçonnage</td><td class="lv-moderate level-cell">Modéré</td></tr>
+<tr><td>15/09/2027</td><td>R06</td><td>Vol ou perte d&#x27;un ordinateur portable</td><td class="lv-low level-cell">Faible</td></tr>
+<tr><td>15/09/2027</td><td>R07</td><td>Accès conservés après un départ ou la fin d&#x27;un contrat de prestation</td><td class="lv-low level-cell">Faible</td></tr>
+</tbody></table></div>
+<h2>Références</h2>
+<h3>ISO/IEC 27001:2022, annexe A</h3>
+<div class="table"><table>
+<thead><tr><th scope="col">Thème</th><th scope="col">Mesures citées</th></tr></thead>
+<tbody>
+<tr><td>5 — Mesures organisationnelles</td><td>5.14, 5.15, 5.17, 5.18, 5.20, 5.23, 5.30</td></tr>
+<tr><td>6 — Mesures liées aux personnes</td><td>6.3, 6.5</td></tr>
+<tr><td>7 — Mesures physiques</td><td>7.9</td></tr>
+<tr><td>8 — Mesures technologiques</td><td>8.1, 8.2, 8.5, 8.7, 8.8, 8.13, 8.16, 8.20, 8.22, 8.24, 8.26, 8.28, 8.29</td></tr>
+</tbody></table></div>
+<h3>Playbooks de réponse aux incidents</h3>
+<div class="table"><table>
+<thead><tr><th scope="col">Playbook</th><th scope="col">Risques</th></tr></thead>
+<tbody>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P01-logiciel-malveillant.md" rel="noopener noreferrer">P01 — Infection par logiciel malveillant</a></td><td>R01</td></tr>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P02-rancongiciel.md" rel="noopener noreferrer">P02 — Attaque par rançongiciel</a></td><td>R01</td></tr>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P03-fuite-de-donnees.md" rel="noopener noreferrer">P03 — Fuite de données</a></td><td>R03</td></tr>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P04-hameconnage.md" rel="noopener noreferrer">P04 — Hameçonnage</a></td><td>R02, R04</td></tr>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P05-acces-non-autorise.md" rel="noopener noreferrer">P05 — Accès non autorisé</a></td><td>R07</td></tr>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P06-deni-de-service.md" rel="noopener noreferrer">P06 — Déni de service</a></td><td>R05</td></tr>
+<tr><td><a href="https://github.com/Aiyeesha/incident-response-playbook/blob/main/fr/playbooks/P07-compte-compromis.md" rel="noopener noreferrer">P07 — Compte compromis et fraude au virement</a></td><td>R02, R04</td></tr>
+</tbody></table></div>
+<h3>Techniques MITRE ATT&amp;CK</h3>
+<div class="table"><table>
+<thead><tr><th scope="col">Technique</th><th scope="col">Risques</th></tr></thead>
+<tbody>
+<tr><td><a href="https://attack.mitre.org/techniques/T1078/" rel="noopener noreferrer">T1078</a></td><td>R01, R07</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1078/004/" rel="noopener noreferrer">T1078.004</a></td><td>R04</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1133/" rel="noopener noreferrer">T1133</a></td><td>R01</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1190/" rel="noopener noreferrer">T1190</a></td><td>R03</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1486/" rel="noopener noreferrer">T1486</a></td><td>R01</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1490/" rel="noopener noreferrer">T1490</a></td><td>R01</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1498/" rel="noopener noreferrer">T1498</a></td><td>R05</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1566/" rel="noopener noreferrer">T1566</a></td><td>R02</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1566/002/" rel="noopener noreferrer">T1566.002</a></td><td>R04</td></tr>
+<tr><td><a href="https://attack.mitre.org/techniques/T1656/" rel="noopener noreferrer">T1656</a></td><td>R02</td></tr>
+</tbody></table></div>
+<h2>Risques clos</h2>
+<div class="table"><table>
+<thead><tr><th scope="col">ID</th><th scope="col">Risque</th></tr></thead>
+<tbody>
+<tr><td>R08</td><td>Sinistre dans la salle serveur de l&#x27;entrepôt</td></tr>
+</tbody></table></div>
+<h2>Avertissements</h2>
+<ul><li>R03.measures[1] : mesure en retard (échéance 2026-10-31) — « Test d&#x27;intrusion de la boutique et correction des failles trouvées »</li></ul>
+</main>
+<footer>Généré par risk-assessment-matrix 1.0.0 le 08/11/2026.</footer>
+</body>
+</html>
